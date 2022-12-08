@@ -1,4 +1,4 @@
-package com.poker.gameservice.models;
+package com.poker.gameservice.model;
 
 import lombok.Data;
 

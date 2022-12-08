@@ -7,18 +7,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.poker.gameservice.models.dto.CreateGameRequestDTO;
-import com.poker.gameservice.models.dto.CreateGameResponseDTO;
+import com.poker.gameservice.model.dto.CreateGameRequest;
+import com.poker.gameservice.model.dto.CreateGameResponse;
 
 @RestController
 @RequestMapping("/game")
 public class GameController {
     @PostMapping
-    public ResponseEntity<CreateGameResponseDTO> createGame(@RequestBody CreateGameRequestDTO request) {
-        // TODO: Complete createGame controller once game table is defined
+    public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
+        // TODO: Complete createGame controller once game entity is defined
         System.out.println(request);
-        ResponseEntity<CreateGameResponseDTO> response = new ResponseEntity<CreateGameResponseDTO>(
-                new CreateGameResponseDTO("gameId"),
+        ResponseEntity<CreateGameResponse> response = new ResponseEntity<CreateGameResponse>(
+                new CreateGameResponse("gameId"),
                 HttpStatus.OK);
         return response;
     }

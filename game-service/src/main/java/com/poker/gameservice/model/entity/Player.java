@@ -1,4 +1,4 @@
-package com.poker.gameservice.model;
+package com.poker.gameservice.model.entity;
 
 import jakarta.persistence.*;
 
