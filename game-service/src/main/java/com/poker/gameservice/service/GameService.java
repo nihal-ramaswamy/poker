@@ -5,7 +5,7 @@ import com.poker.gameservice.model.dto.CreateStartGameRequest;
 import com.poker.gameservice.model.dto.CreateStartGameResponse;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.repository.PlayerRepository;
-
+import com.poker.gameservice.util.CardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,56 +52,10 @@ public class GameService {
         return randomPlayerList;
     }
 
-    private List<Card> generateDeck() {
-        List<String> suite = new ArrayList<>(List.of("Diamond", "Spade", "Club", "Heart"));
-        List<String> rank = new ArrayList<>(List.of("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"));
 
-        List<Card> deck = new ArrayList<>();
-
-        for (String value : suite) {
-            for (String s : rank) {
-                deck.add(new Card(value, s));
-            }
-        }
-
-        return deck;
-    }
-
-    List<Card> getStartingDeck(Integer numDecks) {
-        List<Card> availableCards = new ArrayList<>();
-
-        for (int i = 0; i < numDecks; ++i) {
-            List<Card> deck = generateDeck();
-            availableCards.addAll(deck);
-        }
-
-        return availableCards;
-    }
-
-    /*
-    * @param numDecks Number of decks in the game
-    * */
-    private List<Card> getFlopCards(Integer numDecks) {
-        List<Card> availableCards = getStartingDeck(numDecks);
-
-        Random rand = new Random();
-        List<Card> chosenCards = new ArrayList<>();
-
-        for (int i = 0; i < availableCards.size(); ++i) {
-            int randomIndex = rand.nextInt(availableCards.size());
-
-            while (chosenCards.contains(availableCards.get(randomIndex))) {
-                randomIndex = rand.nextInt(availableCards.size());
-            }
-
-            chosenCards.add(availableCards.get(randomIndex));
-        }
-
-        return chosenCards;
-    }
 
     private void updateGameInDB(Game game, List<Card> flopCards, Integer numDecks, List<String> chosenPlayers) {
-        List<Card> availableCards = this.getStartingDeck(numDecks);
+        List<Card> availableCards = CardUtils.getStartingDeck(numDecks);
         availableCards.removeAll(flopCards);
 
         game.setCardsOnTable(flopCards);
@@ -153,10 +107,9 @@ public class GameService {
 
         // numPlayers = 2, 1 for smallBetPlayer, 1 for bigBetPlayer
         List<String> chosenPlayers = this.getTwoRandomPlayersWithoutRepetition(playersInGame);
-        List<Card> flopCards = this.getFlopCards(numDecks);
+        List<Card> flopCards = CardUtils.getFlopCards(numDecks);
 
         updateGameInDB(game, flopCards, numDecks, chosenPlayers);
-
 
         // TODO: inform corresponding players about big bet and small bet
         return new CreateStartGameResponse(chosenPlayers.get(0), chosenPlayers.get(1), flopCards);
