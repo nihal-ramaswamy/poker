@@ -12,6 +12,7 @@ public interface GameDao extends JpaRepository<Game, String> {
     @Modifying
     @Query(value = "INSERT INTO game(id, hasGameStarted, roundNumber, adminName, lastRaisedAmount, moneyOnTable, cardsOnTable, availableCardsInDeck, gameSettings) VALUES (:id, :hasGameStarted, :roundNumber, :adminName, :lastRaisedAmount, :moneyOnTable, :cardsOnTable, :availableCardsInDeck, :gameSettings)",
             nativeQuery = true)
+
     void insertGame(@Param("id") String id,
                     @Param("hasGameStarted") Boolean hasGameStarted,
                     @Param("roundNumber") Integer roundNumber,
@@ -21,4 +22,9 @@ public interface GameDao extends JpaRepository<Game, String> {
                     @Param("cardsOnTable") Card cardsOnTable,
                     @Param("availableCardsInDeck") Card availableCardsInDeck,
                     @Param("gameSettings") GameSettings gameSettings);
+
+    @Query(value = "SELECT id FROM game WHERE id = :id", nativeQuery = true)
+    String gameIDExists(@Param("id") String id);
+
+        
 }

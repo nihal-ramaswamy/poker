@@ -17,7 +17,14 @@ public class GameService {
     }
 
     private String writeToGameTable(String adminUserName, GameSettings gameSettings) {
-        String gameID = RandomStringGenerator.generate();
+
+        String gameID;
+        while(true){
+            gameID = RandomStringGenerator.generate();
+            if(gameDao.gameIDExists(gameID).isBlank()){
+                break;
+            }
+        }
 
         this.gameDao.insertGame(gameID,
                 false,

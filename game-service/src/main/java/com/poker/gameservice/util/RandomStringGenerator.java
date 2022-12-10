@@ -1,9 +1,11 @@
 package com.poker.gameservice.util;
 
 import com.poker.gameservice.config.Constants;
+
 import java.util.Random;
 
 public class RandomStringGenerator {
+
     public static String generate() {
 
         int codeLen = Constants.CODE_LENGTH;
