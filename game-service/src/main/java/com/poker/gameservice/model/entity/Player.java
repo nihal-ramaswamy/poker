@@ -10,15 +10,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.SequenceGenerator;
 
-@Entity(name = "player")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity(name = "player")
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)

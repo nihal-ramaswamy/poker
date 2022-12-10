@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CreateGameRequest {
-    private String adminUsername;
+    private String adminUserId;
     private GameSettings settings;
 }

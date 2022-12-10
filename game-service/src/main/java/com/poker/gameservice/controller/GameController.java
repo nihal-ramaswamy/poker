@@ -1,5 +1,10 @@
 package com.poker.gameservice.controller;
 
+import com.poker.gameservice.model.dto.CreateGameRequest;
+import com.poker.gameservice.model.dto.CreateGameResponse;
+import com.poker.gameservice.model.dto.CreateStartGameRequest;
+import com.poker.gameservice.model.dto.CreateStartGameResponse;
+import com.poker.gameservice.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +62,12 @@ public class GameController {
         Long playerID = player.getId();
         playerService.informPlayerJoinToAdmin(gameID, player);
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
+    }
+
+    @PostMapping("/start")
+    public ResponseEntity<CreateStartGameResponse> startGame(@RequestBody CreateStartGameRequest request) {
+        CreateStartGameResponse startGameResponse = this.gameService.startGame(request);
+
+        return new ResponseEntity<>(startGameResponse, HttpStatus.OK);
     }
 }
