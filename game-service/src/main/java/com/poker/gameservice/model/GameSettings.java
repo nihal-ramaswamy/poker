@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameSettings implements Serializable {
-    @Id
-    private String id;
-
     @Column(nullable = false)
     private Integer startingMoney;
 
