@@ -1,6 +1,14 @@
 package com.poker.gameservice.model.entity;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import com.poker.gameservice.model.Card;
+import com.poker.gameservice.model.GameSettings;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,12 +36,12 @@ public class Game {
     @Column(nullable = false)
     private Long moneyOnTable;
 
-    @ManyToOne
-    private Card cardsOnTable;
+    @ElementCollection
+    private List<Card> cardsOnTable;
 
-    @ManyToOne
-    private Card availableCardsInDeck;
+    @ElementCollection
+    private List<Card> availableCardsInDeck;
 
-    @OneToOne
+    @Column(nullable = false)
     private GameSettings gameSettings;
 }
