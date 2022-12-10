@@ -19,6 +19,9 @@ import jakarta.persistence.SequenceGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "player")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
