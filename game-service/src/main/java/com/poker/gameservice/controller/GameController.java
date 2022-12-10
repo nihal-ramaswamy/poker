@@ -1,6 +1,7 @@
 package com.poker.gameservice.controller;
 
-import com.poker.gameservice.service.GameControllerImpl;
+import com.poker.gameservice.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +15,17 @@ import com.poker.gameservice.model.dto.CreateGameResponse;
 @RestController
 @RequestMapping("/game")
 public class GameController {
+    private GameService gameService;
+
+    @Autowired
+    public void setGameService(GameService gameService) {
+        this.gameService = gameService;
+    }
+
     @PostMapping(name = "/createGame")
     public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
-        GameControllerImpl gameController = new GameControllerImpl();
 
-        String gameID = gameController.createGame(request);
+        String gameID = this.gameService.createGame(request);
 
         return new ResponseEntity<>(
                 new CreateGameResponse(gameID),
