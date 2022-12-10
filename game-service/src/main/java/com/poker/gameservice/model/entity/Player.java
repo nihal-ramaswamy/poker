@@ -7,7 +7,7 @@ public class Player {
     @Id
     @SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_sequence")
-    private Long playerID;
+    private Long id;
 
     @Column(nullable = false, unique = true)
     private Long currentGameID;
@@ -17,4 +17,22 @@ public class Player {
 
     @Column(nullable = false)
     private Long moneyInPot;
+
+    @Column(nullable = false)
+    private Boolean isCurrentlyPlaying;
+
+    @Column(nullable = false)
+    private Boolean isCurrentSmallBetPlayer;
+
+    @Column(nullable = false)
+    private Boolean isCurrentBigBetPlayer;
+
+    @Column(nullable = false)
+    private Boolean isLastRaisedPlayer;
+
+    @Column(nullable = false)
+    private Boolean isPlayerTurn;
+
+    @ManyToOne
+    private Card deck;
 }

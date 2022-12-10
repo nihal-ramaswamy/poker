@@ -13,13 +13,11 @@ import com.poker.gameservice.model.dto.CreateGameResponse;
 @RestController
 @RequestMapping("/game")
 public class GameController {
-    @PostMapping
+    @PostMapping(name = "/createGame")
     public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
         // TODO: Complete createGame controller once game entity is defined
-        System.out.println(request);
-        ResponseEntity<CreateGameResponse> response = new ResponseEntity<CreateGameResponse>(
+        return new ResponseEntity<>(
                 new CreateGameResponse("gameId"),
                 HttpStatus.OK);
-        return response;
     }
 }
