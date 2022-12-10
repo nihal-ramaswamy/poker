@@ -4,7 +4,7 @@ import com.poker.gameservice.config.Constants;
 import java.util.Random;
 
 public class RandomStringGenerator {
-    public String generate() {
+    public static String generate() {
 
         int codeLen = Constants.CODE_LENGTH;
 

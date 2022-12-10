@@ -1,5 +1,6 @@
 package com.poker.gameservice.controller;
 
+import com.poker.gameservice.service.GameControllerImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,9 +16,12 @@ import com.poker.gameservice.model.dto.CreateGameResponse;
 public class GameController {
     @PostMapping(name = "/createGame")
     public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
-        // TODO: Complete createGame controller once game entity is defined
+        GameControllerImpl gameController = new GameControllerImpl();
+
+        String gameID = gameController.createGame(request);
+
         return new ResponseEntity<>(
-                new CreateGameResponse("gameId"),
+                new CreateGameResponse(gameID),
                 HttpStatus.OK);
     }
 }

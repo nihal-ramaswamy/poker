@@ -1,10 +1,14 @@
 package com.poker.gameservice.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity(name = "game")
+@Data
 public class Game {
     @Id
+    @SequenceGenerator(name = "games_sequence", sequenceName = "games_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "games_sequence")
     private String id;
 
     @Column(nullable = false)
