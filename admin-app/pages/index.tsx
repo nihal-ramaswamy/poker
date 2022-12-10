@@ -9,7 +9,7 @@ let stompClient: CompatClient | null = null;
 
 const Home: NextPage = () => {
   const createGame = async () => {
-    const { data } = await axios.post("/game", {
+    const { data } = await axios.post("/game/create", {
       adminUsername: "admin-username",
       settings: {
         startingMoney: 10,

@@ -1,32 +1,32 @@
 package com.poker.gameservice.service;
 
-import com.poker.gameservice.model.dao.GameDao;
-import com.poker.gameservice.model.dto.CreateGameRequest;
+import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.GameSettings;
+import com.poker.gameservice.repository.GameRepository;
 import com.poker.gameservice.util.RandomStringGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GameService {
-    private GameDao gameDao;
+    private GameRepository gameRepository;
 
     @Autowired
-    public void setGameDao(GameDao gameDao) {
-        this.gameDao = gameDao;
+    public void setGameRepository(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
     }
 
-    private String writeToGameTable(String adminUserName, GameSettings gameSettings) {
-
+    public String createGame(String adminUserName, GameSettings gameSettings) {
         String gameID;
-        while(true){
+        while (true) {
             gameID = RandomStringGenerator.generate();
-            if(gameDao.gameIDExists(gameID).isBlank()){
+            if (gameRepository.findById(gameID).isEmpty()) {
                 break;
             }
         }
 
-        this.gameDao.insertGame(gameID,
+        gameRepository.save(new Game(
+                gameID,
                 false,
                 0,
                 adminUserName,
@@ -34,12 +34,8 @@ public class GameService {
                 0L,
                 null,
                 null,
-                gameSettings);
+                gameSettings));
 
         return gameID;
-    }
-
-    public String createGame(CreateGameRequest request) {
-        return writeToGameTable(request.getAdminUsername(), request.getSettings());
     }
 }
