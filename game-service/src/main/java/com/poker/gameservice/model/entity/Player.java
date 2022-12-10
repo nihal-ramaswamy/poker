@@ -1,6 +1,13 @@
 package com.poker.gameservice.model.entity;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import com.poker.gameservice.model.Card;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity(name = "player")
 public class Player {
@@ -31,6 +38,6 @@ public class Player {
     @Column(nullable = false)
     private Boolean isPlayerTurn;
 
-    @ManyToOne
-    private Card deck;
+    @ElementCollection
+    private List<Card> deck;
 }

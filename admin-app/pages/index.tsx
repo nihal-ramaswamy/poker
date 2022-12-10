@@ -15,8 +15,8 @@ const Home: NextPage = () => {
         startingMoney: 10,
         smallBet: 10,
         bigBet: 10,
-        startingBet: {
-          growthRate: 10,
+        startingBetSettings: {
+          growthAmount: 10,
           perRoundCount: 10,
         },
         timeLimit: 10,

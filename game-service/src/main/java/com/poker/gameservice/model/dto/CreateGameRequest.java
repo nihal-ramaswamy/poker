@@ -1,6 +1,6 @@
 package com.poker.gameservice.model.dto;
 
-import com.poker.gameservice.model.entity.GameSettings;
+import com.poker.gameservice.model.GameSettings;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

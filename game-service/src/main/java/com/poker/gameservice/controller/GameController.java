@@ -22,7 +22,7 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping(name = "/create")
+    @PostMapping("/create")
     public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
         String gameID = gameService.createGame(request.getAdminUsername(), request.getSettings());
         return new ResponseEntity<>(

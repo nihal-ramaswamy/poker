@@ -1,13 +1,17 @@
-package com.poker.gameservice.model.entity;
+package com.poker.gameservice.model;
 
-import jakarta.persistence.*;
+import java.io.Serializable;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity(name = "game_settings")
 @Data
 @AllArgsConstructor
-public class GameSettings {
+@NoArgsConstructor
+public class GameSettings implements Serializable {
     @Id
     private String id;
 
@@ -20,8 +24,8 @@ public class GameSettings {
     @Column(nullable = false)
     private Integer bigBet;
 
-    @OneToOne
-    private StartingBetSettings startingBet;
+    @Column(nullable = false)
+    private StartingBetSettings startingBetSettings;
 
     @Column(nullable = false)
     private Integer timeLimit;
