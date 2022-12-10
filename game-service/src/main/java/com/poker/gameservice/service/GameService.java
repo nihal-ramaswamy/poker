@@ -19,12 +19,9 @@ public class GameService {
 
     public String createGame(String adminUserName, GameSettings gameSettings) {
         String gameID;
-        while (true) {
+        do {
             gameID = RandomStringGenerator.generate();
-            if (gameRepository.findById(gameID).isEmpty()) {
-                break;
-            }
-        }
+        } while (gameRepository.findById(gameID).isPresent());
 
         gameRepository.save(new Game(
                 gameID,
