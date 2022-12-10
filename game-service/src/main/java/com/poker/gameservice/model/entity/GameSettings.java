@@ -1,13 +1,15 @@
 package com.poker.gameservice.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Entity(name = "game_settings")
+@Data
+@AllArgsConstructor
 public class GameSettings {
     @Id
-    @SequenceGenerator(name = "game_settings_sequence", sequenceName = "game_settings_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_settings_sequence")
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
     private Integer startingMoney;

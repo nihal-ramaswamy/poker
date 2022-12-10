@@ -1,14 +1,16 @@
 package com.poker.gameservice.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "game")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Game {
     @Id
-    @SequenceGenerator(name = "games_sequence", sequenceName = "games_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "games_sequence")
     private String id;
 
     @Column(nullable = false)

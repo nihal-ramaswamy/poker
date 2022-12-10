@@ -15,7 +15,6 @@ public class GameControllerImpl {
 
         String gameID = RandomStringGenerator.generate();
 
-        entityManager.getTransaction().begin();
 
         Game game = new Game();
 
@@ -29,7 +28,6 @@ public class GameControllerImpl {
         game.setAvailableCardsInDeck(null);
         game.setGameSettings(gameSettings);
         entityManager.persist(game);
-        entityManager.getTransaction().commit();
 
         entityManagerFactory.close();
         entityManager.close();
