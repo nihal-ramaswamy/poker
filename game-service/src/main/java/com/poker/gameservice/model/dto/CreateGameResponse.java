@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CreateGameResponse {
-    private String gameId;
+    private String gameID;
 }
