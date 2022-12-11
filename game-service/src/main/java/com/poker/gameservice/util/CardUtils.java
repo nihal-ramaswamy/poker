@@ -45,7 +45,7 @@ public class CardUtils {
         Random rand = new Random();
         List<Card> chosenCards = new ArrayList<>();
 
-        for (int i = 0; i < availableCards.size(); ++i) {
+        for (int i = 0; i < 3; ++i) {
             int randomIndex = rand.nextInt(availableCards.size());
 
             while (chosenCards.contains(availableCards.get(randomIndex))) {
@@ -56,5 +56,10 @@ public class CardUtils {
         }
 
         return chosenCards;
+    }
+
+    // availableCards should be pre-shuffled
+    public static List<Card> getHandCards(List<Card> availableCards) {
+        return List.of(availableCards.get(0), availableCards.get(1));
     }
 }

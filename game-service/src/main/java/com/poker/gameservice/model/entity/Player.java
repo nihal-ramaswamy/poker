@@ -20,9 +20,6 @@ import jakarta.persistence.SequenceGenerator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "player")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
@@ -39,7 +36,7 @@ public class Player {
     private Long currentMoney;
 
     @Column(nullable = false)
-    private Long moneyInPot;
+    private Long betMoneyInPot;
 
     @Column(nullable = false)
     private Boolean isCurrentlyPlaying;

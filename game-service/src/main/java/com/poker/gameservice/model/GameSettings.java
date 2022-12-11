@@ -12,13 +12,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class GameSettings implements Serializable {
     @Column(nullable = false)
-    private Integer startingMoney;
+    private Long startingMoney;
 
     @Column(nullable = false)
-    private Integer smallBet;
+    private Long smallBet;
 
     @Column(nullable = false)
-    private Integer bigBet;
+    private Long bigBet;
 
     @Column(nullable = false)
     private StartingBetSettings startingBetSettings;
@@ -33,8 +33,8 @@ public class GameSettings implements Serializable {
     private Boolean exposeWinnerDetails;
 
     @Column(nullable = false)
-    private String currentSmallBetPlayerId;
+    private Long currentSmallBetPlayerId;
 
     @Column(nullable = false)
-    private String currentBigBetPlayerId;
+    private Long currentBigBetPlayerId;
 }

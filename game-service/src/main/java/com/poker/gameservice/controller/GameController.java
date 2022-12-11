@@ -1,23 +1,19 @@
 package com.poker.gameservice.controller;
 
-import com.poker.gameservice.model.dto.CreateGameRequest;
-import com.poker.gameservice.model.dto.CreateGameResponse;
-import com.poker.gameservice.model.dto.CreateStartGameRequest;
-import com.poker.gameservice.model.dto.CreateStartGameResponse;
+import com.poker.gameservice.exception.GameDoesNotExistException;
+import com.poker.gameservice.model.dto.*;
+import com.poker.gameservice.model.entity.Game;
+import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
+import com.poker.gameservice.service.MessagingService;
+import com.poker.gameservice.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.poker.gameservice.exception.GameDoesNotExistException;
 import com.poker.gameservice.model.dto.CreateGameRequest;
@@ -29,6 +25,7 @@ import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
 import com.poker.gameservice.service.PlayerService;
+import java.util.List;
 
 @RestController
 @RequestMapping("/game")
@@ -36,10 +33,13 @@ public class GameController {
     private GameService gameService;
     private PlayerService playerService;
 
+    private MessagingService messagingService;
+
     @Autowired
-    public void setGameService(GameService gameService, PlayerService playerService) {
+    public void setGameService(GameService gameService, PlayerService playerService, MessagingService messagingService) {
         this.gameService = gameService;
         this.playerService = playerService;
+        this.messagingService = messagingService;
     }
 
     @GetMapping("/{gameID}")
@@ -73,12 +73,18 @@ public class GameController {
     public CreateStartGameResponse startGame(@RequestBody CreateStartGameRequest request) {
         CreateStartGameResponse startGameResponse = this.gameService.startGame(request);
         return startGameResponse;
+    @MessageMapping("/start/{gameID}")
+    public void startGame(@PathVariable String gameID) {
+        List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
+        messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
+    }
+
     @PostMapping("/join")
     public ResponseEntity<PlayerJoinResponse> joinPlayerToGame(@RequestBody PlayerJoinRequest request) {
         String gameID = request.getGameID(), playerUsername = request.getPlayerUsername();
         Player player = playerService.getPlayerIfExistsElseCreate(playerUsername, gameID);
         Long playerID = player.getId();
-        playerService.informPlayerJoinToAdmin(gameID, player);
+        messagingService.informPlayerJoinToAdmin(gameID, player);
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 }
