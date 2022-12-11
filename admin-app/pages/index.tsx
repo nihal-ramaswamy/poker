@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import SockJS from "sockjs-client";
 import axios from "../config/axios";
 import { GAME_SERVICE_WS_URL } from "../config/constants";
+import Player from "../types/Player";
 
 let stompClient: CompatClient | null = null;
 
@@ -11,6 +12,8 @@ const Home: NextPage = () => {
   const [username, setUsername] = useState<string>("");
   const [gameID, setGameID] = useState<string>("");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
 
   const createGame = async () => {
     const {
@@ -36,20 +39,36 @@ const Home: NextPage = () => {
     setIsLoggedIn(true);
   };
 
+  const fetchCurrentGameStatus = async () => {
+    const { data } = await axios.get(`/game/${gameID}`);
+    const { players, hasStarted } = data;
+    setPlayers(players);
+    setHasStarted(hasStarted);
+  };
+
   const connect = () => {
     const socket = new SockJS(GAME_SERVICE_WS_URL);
     stompClient = Stomp.over(socket);
     stompClient.debug = () => null;
-    stompClient.connect({}, async function () {
-      console.log("Connected");
+    stompClient.connect({}, async () => {
+      fetchCurrentGameStatus();
+
+      const onJoinURL = "/admin/" + gameID + "/on-join";
+      stompClient?.subscribe(onJoinURL, (message) => {
+        const { playerUsername, playerID } = JSON.parse(message.body);
+        setPlayers((players) => [
+          ...players,
+          { ID: playerID, username: playerUsername },
+        ]);
+      });
     });
   };
 
   useEffect(() => {
-    if (stompClient == null) {
+    if (isLoggedIn && stompClient == null) {
       connect();
     }
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -66,9 +85,21 @@ const Home: NextPage = () => {
   return (
     <div>
       {isLoggedIn ? (
-        <p>
-          Logged In: {username}, gameID: {gameID}
-        </p>
+        <div>
+          <p className="mb-3">
+            Logged In: {username}, gameID: {gameID}
+          </p>
+          <div>
+            <label className="text-md font-medium text-gray-900">
+              Players: {players.length}
+            </label>
+            <ul>
+              {players.map(({ username, ID }) => (
+                <li key={`player-${ID}`}>{username}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
       ) : (
         <div className="p-5">
           <div className="flex items-center mb-4">

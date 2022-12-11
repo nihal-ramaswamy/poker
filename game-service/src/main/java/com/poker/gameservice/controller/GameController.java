@@ -12,6 +12,7 @@ import com.poker.gameservice.model.dto.CreateGameRequest;
 import com.poker.gameservice.model.dto.CreateGameResponse;
 import com.poker.gameservice.model.dto.PlayerJoinRequest;
 import com.poker.gameservice.model.dto.PlayerJoinResponse;
+import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
 import com.poker.gameservice.service.PlayerService;
 
@@ -35,8 +36,10 @@ public class GameController {
 
     @PostMapping("/join")
     public ResponseEntity<PlayerJoinResponse> joinPlayerToGame(@RequestBody PlayerJoinRequest request) {
-        Long playerID = playerService.getPlayerIfExistsElseCreate(request.getPlayerUsername(), request.getGameID())
-                .getId();
+        String gameID = request.getGameID(), playerUsername = request.getPlayerUsername();
+        Player player = playerService.getPlayerIfExistsElseCreate(playerUsername, gameID);
+        Long playerID = player.getId();
+        playerService.informPlayerJoinToAdmin(gameID, player);
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 }
