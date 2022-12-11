@@ -71,20 +71,21 @@ const Home: NextPage = () => {
         </p>
       ) : (
         <div className="p-5">
-          <div className="mb-5">
-            <label className="mr-3">Username:</label>
+          <div className="flex items-center mb-4">
+            <label className="text-md mr-3 font-medium text-gray-900">
+              Username
+            </label>
             <input
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-64 p-2.5"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="shadow appearance-none border rounded w-56 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               type="text"
             />
           </div>
-
           <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="button"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             onClick={createGame}
+            type="button"
           >
             Create game
           </button>

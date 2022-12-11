@@ -7,7 +7,10 @@ import com.poker.gameservice.model.Card;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,9 +21,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Player {
     @Id
+    @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "player_id", sequenceName = "sequence_player_id", initialValue = 0, allocationSize = 1)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)

@@ -10,21 +10,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.poker.gameservice.model.dto.CreateGameRequest;
 import com.poker.gameservice.model.dto.CreateGameResponse;
+import com.poker.gameservice.model.dto.PlayerJoinRequest;
+import com.poker.gameservice.model.dto.PlayerJoinResponse;
 import com.poker.gameservice.service.GameService;
+import com.poker.gameservice.service.PlayerService;
 
 @RestController
 @RequestMapping("/game")
 public class GameController {
     private GameService gameService;
+    private PlayerService playerService;
 
     @Autowired
-    public void setGameService(GameService gameService) {
+    public void setGameService(GameService gameService, PlayerService playerService) {
         this.gameService = gameService;
+        this.playerService = playerService;
     }
 
     @PostMapping("/create")
     public ResponseEntity<CreateGameResponse> createGame(@RequestBody CreateGameRequest request) {
         String gameID = gameService.createGame(request.getAdminUsername(), request.getSettings());
         return new ResponseEntity<>(new CreateGameResponse(gameID), HttpStatus.OK);
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<PlayerJoinResponse> joinPlayerToGame(@RequestBody PlayerJoinRequest request) {
+        Long playerID = playerService.getPlayerIfExistsElseCreate(request.getPlayerUsername(), request.getGameID())
+                .getId();
+        return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 }
