@@ -71,5 +71,10 @@ public class GameController {
     public CreateStartGameResponse startGame(@RequestBody CreateStartGameRequest request) {
         CreateStartGameResponse startGameResponse = this.gameService.startGame(request);
         return startGameResponse;
+    @PostMapping("/join")
+    public ResponseEntity<PlayerJoinResponse> joinPlayerToGame(@RequestBody PlayerJoinRequest request) {
+        Long playerID = playerService.getPlayerIfExistsElseCreate(request.getPlayerUsername(), request.getGameID())
+                .getId();
+        return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 }
