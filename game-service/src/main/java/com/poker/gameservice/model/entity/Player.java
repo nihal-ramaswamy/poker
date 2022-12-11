@@ -8,8 +8,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity(name = "player")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Player {
     @Id
     private Long id;

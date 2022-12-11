@@ -3,7 +3,6 @@ package com.poker.gameservice.model;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,16 +12,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameSettings implements Serializable {
     @Column(nullable = false)
-    private Integer startingMoney;
+    private Long startingMoney;
 
     @Column(nullable = false)
-    private Integer smallBet;
+    private Long smallBet;
 
     @Column(nullable = false)
-    private Integer bigBet;
+    private Long bigBet;
 
     @Column(nullable = false)
     private StartingBetSettings startingBetSettings;
+
+    @Column(nullable = false)
+    private Long lastRaisedAmount;
 
     @Column(nullable = false)
     private Integer timeLimit;
