@@ -73,8 +73,10 @@ public class GameController {
         return startGameResponse;
     @PostMapping("/join")
     public ResponseEntity<PlayerJoinResponse> joinPlayerToGame(@RequestBody PlayerJoinRequest request) {
-        Long playerID = playerService.getPlayerIfExistsElseCreate(request.getPlayerUsername(), request.getGameID())
-                .getId();
+        String gameID = request.getGameID(), playerUsername = request.getPlayerUsername();
+        Player player = playerService.getPlayerIfExistsElseCreate(playerUsername, gameID);
+        Long playerID = player.getId();
+        playerService.informPlayerJoinToAdmin(gameID, player);
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 }
