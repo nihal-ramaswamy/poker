@@ -3,15 +3,20 @@ package com.poker.gameservice.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.poker.exception.GameDoesNotExistException;
 import com.poker.gameservice.model.dto.CreateGameRequest;
 import com.poker.gameservice.model.dto.CreateGameResponse;
+import com.poker.gameservice.model.dto.GetGameStateResponse;
 import com.poker.gameservice.model.dto.PlayerJoinRequest;
 import com.poker.gameservice.model.dto.PlayerJoinResponse;
+import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
 import com.poker.gameservice.service.PlayerService;
@@ -26,6 +31,17 @@ public class GameController {
     public void setGameService(GameService gameService, PlayerService playerService) {
         this.gameService = gameService;
         this.playerService = playerService;
+    }
+
+    @GetMapping("/{gameID}")
+    public ResponseEntity<GetGameStateResponse> getGameState(@PathVariable String gameID) {
+        try {
+            Game game = gameService.getGame(gameID);
+            GetGameStateResponse response = new GetGameStateResponse(game);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (GameDoesNotExistException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PostMapping("/create")

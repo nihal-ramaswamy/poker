@@ -22,13 +22,13 @@ import lombok.NoArgsConstructor;
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "player_id", sequenceName = "sequence_player_id", initialValue = 0, allocationSize = 1)
+    @SequenceGenerator(name = "sequence_gen_player_id", sequenceName = "sequence_player_id", initialValue = 0, allocationSize = 1)
     private Long id;
 
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
+    @Column(name = "game_id", nullable = false)
     private String currentGameID;
 
     @Column(nullable = false)

@@ -32,7 +32,6 @@ public class PlayerService {
 
     public void informPlayerJoinToAdmin(String gameID, Player player) {
         String onJoinURL = "/admin/" + gameID + "/on-join";
-        System.out.println(onJoinURL);
         messagingTemplate.convertAndSend(onJoinURL, new PlayerJoinAdminMessage(player.getUsername(), gameID));
     }
 }

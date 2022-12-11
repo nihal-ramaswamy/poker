@@ -5,10 +5,13 @@ import java.util.List;
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.GameSettings;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Game {
     @Id
+    @Column(name = "game_id", nullable = false)
     private String id;
 
     @Column(nullable = false)
@@ -35,6 +39,10 @@ public class Game {
 
     @Column(nullable = false)
     private Long moneyOnTable;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "game_id", referencedColumnName = "game_id", nullable = false, insertable = false, updatable = false)
+    private List<Player> players;
 
     @ElementCollection
     private List<Card> cardsOnTable;

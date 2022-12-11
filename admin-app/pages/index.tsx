@@ -19,7 +19,7 @@ const Home: NextPage = () => {
     const {
       data: { gameID },
     } = await axios.post("/game/create", {
-      adminUsername: "admin-username",
+      adminUsername: username,
       settings: {
         startingMoney: 10,
         smallBet: 10,
