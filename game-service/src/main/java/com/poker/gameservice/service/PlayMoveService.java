@@ -48,6 +48,34 @@ public class PlayMoveService {
     }
 
 
+    private Long getBetAmountBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
+        
+        if(player.getIsCurrentSmallBetPlayer() && (move == MoveType.CALL || move == MoveType.CHECK || move == MoveType.FOLD)){
+            betAmount = game.getGameSettings().getSmallBet();
+        }
+        else if (player.getIsCurrentBigBetPlayer() && (move == MoveType.CALL || move == MoveType.CHECK || move == MoveType.FOLD)){
+            betAmount = game.getGameSettings().getBigBet();
+        }
+        else if (move == MoveType.ALL_IN){
+            betAmount = player.getCurrentMoney() - player.getMoneyInPot();
+        }
+        else if (move == MoveType.RAISE){
+            betAmount = betAmount + game.getLastCalledAmount();
+        }
+        else if (move == MoveType.CALL){
+            betAmount = game.getLastCalledAmount();
+        }
+        else if (move == MoveType.CHECK){
+            betAmount = 0L;
+        }
+        else if (move == MoveType.FOLD){
+            betAmount = 0L;
+        }
+
+        return betAmount;
+        
+    }
+
 
     private Player getPlayerBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
         betAmount = getBetAmountBasedOnMove(move, betAmount, player, game);
@@ -124,33 +152,6 @@ public class PlayMoveService {
         }
     }
 
-    private Long getBetAmountBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
-        
-        if(player.getIsCurrentSmallBetPlayer() && (move == MoveType.CALL || move == MoveType.CHECK || move == MoveType.FOLD)){
-            betAmount = game.getGameSettings().getSmallBet();
-        }
-        else if (player.getIsCurrentBigBetPlayer() && (move == MoveType.CALL || move == MoveType.CHECK || move == MoveType.FOLD)){
-            betAmount = game.getGameSettings().getBigBet();
-        }
-        else if (move == MoveType.ALL_IN){
-            betAmount = player.getCurrentMoney() - player.getMoneyInPot();
-        }
-        else if (move == MoveType.RAISE){
-            betAmount = betAmount + game.getLastCalledAmount();
-        }
-        else if (move == MoveType.CALL){
-            betAmount = game.getLastCalledAmount();
-        }
-        else if (move == MoveType.CHECK){
-            betAmount = 0L;
-        }
-        else if (move == MoveType.FOLD){
-            betAmount = 0L;
-        }
-
-        return betAmount;
-        
-    }
 
     private Game getGameBasedOnMove(MoveType move, Long betAmount, Game game, Player player) {
         if(player.getIsLastRaisedPlayer()){
