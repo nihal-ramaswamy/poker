@@ -1,8 +1,12 @@
 package com.poker.gameservice.service;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.poker.gameservice.exception.GameDoesNotExistException;
 import com.poker.gameservice.model.GameSettings;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.repository.GameRepository;
@@ -30,10 +34,19 @@ public class GameService {
                 adminUserName,
                 0L,
                 0L,
+                new ArrayList<>(),
                 null,
                 null,
                 gameSettings));
 
         return gameID;
+    }
+
+    public Game getGame(String gameID) throws GameDoesNotExistException {
+        Optional<Game> gameOptional = gameRepository.findById(gameID);
+        if (gameOptional.isEmpty()) {
+            throw new GameDoesNotExistException();
+        }
+        return gameOptional.get();
     }
 }
