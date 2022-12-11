@@ -6,6 +6,9 @@ import com.poker.gameservice.model.dto.CreateStartGameResponse;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.repository.PlayerRepository;
 import com.poker.gameservice.util.CardUtils;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -113,5 +116,11 @@ public class GameService {
 
         // TODO: inform corresponding players about big bet and small bet
         return new CreateStartGameResponse(chosenPlayers.get(0), chosenPlayers.get(1), flopCards);
+    public Game getGame(String gameID) throws GameDoesNotExistException {
+        Optional<Game> gameOptional = gameRepository.findById(gameID);
+        if (gameOptional.isEmpty()) {
+            throw new GameDoesNotExistException();
+        }
+        return gameOptional.get();
     }
 }
