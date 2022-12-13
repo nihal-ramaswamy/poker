@@ -34,7 +34,6 @@ public class PlayMoveService {
             updatePlayerBasedOnMove(player, game, move, betAmount);
             updateGameBasedOnMove(game, player, move, betAmount);
             updateNextPlayer(playerID, players, game);
-            // TODO: Change currently playing player and other such properties
         }
 
     }
