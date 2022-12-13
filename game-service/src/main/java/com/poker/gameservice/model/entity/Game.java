@@ -35,7 +35,7 @@ public class Game {
     private String adminName;
 
     @Column(nullable = false)
-    private Long lastRaisedAmount;
+    private Long lastCalledAmount;
 
     @Column(nullable = false)
     private Long moneyOnTable;
