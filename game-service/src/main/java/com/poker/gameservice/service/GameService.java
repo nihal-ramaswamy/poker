@@ -33,7 +33,6 @@ public class GameService {
                 0,
                 adminUserName,
                 0L,
-                0L,
                 new ArrayList<>(),
                 null,
                 null,

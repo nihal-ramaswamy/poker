@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.GameSettings;
+import com.poker.gameservice.model.Pot;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -35,9 +36,6 @@ public class Game {
     private String adminName;
 
     @Column(nullable = false)
-    private Long lastCalledAmount;
-
-    @Column(nullable = false)
     private Long moneyOnTable;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -52,4 +50,7 @@ public class Game {
 
     @Column(nullable = false)
     private GameSettings gameSettings;
+
+    @ElementCollection
+    private List<Pot> miniPots;
 }

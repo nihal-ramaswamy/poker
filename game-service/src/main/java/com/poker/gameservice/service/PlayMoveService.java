@@ -1,10 +1,12 @@
 package com.poker.gameservice.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.poker.gameservice.model.MoveType;
-
+import com.poker.gameservice.model.Pot;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.repository.GameRepository;
@@ -23,18 +25,52 @@ public class PlayMoveService {
 
     public void playMove(String gameID, Long playerID, MoveType move, Long betAmount) {
 
-        // List<Player> allPlayers =
-        // playerRepository.findByCurrentGameIdOrderByIdAsc(gameID).get();
-        // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.query-methods.details
-
         Player player = playerRepository.findById(playerID).get();
         Game game = gameRepository.findById(gameID).get();
+        List<Player> players = game.getPlayers();
+
 
         if (player.getIsPlayerTurn() && player.getIsCurrentlyPlaying()) {
             updatePlayerBasedOnMove(player, game, move, betAmount);
             updateGameBasedOnMove(game, player, move, betAmount);
+            updateNextPlayer(playerID, players, game);
             // TODO: Change currently playing player and other such properties
         }
+
+    }
+
+    private void updateNextPlayer(Long playerID, List<Player> players, Game game) {
+        Player nextPlayer = new Player();
+
+        for (int i=0; i<players.size(); i++) {
+            if (players.get(i).getId() == playerID) { 
+                if(i == players.size() - 1) {
+                    nextPlayer = players.get(0);
+                } else {
+                    nextPlayer = players.get(i+1);
+                }
+                break;
+            }
+        }
+        Long splitPot = 0L;
+        if(nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying()) {
+            nextPlayer.setIsCurrentlyPlaying(false);
+            for (Player p : players) {
+                splitPot += Math.min(p.getCurrentMoney(), nextPlayer.getMoneyInPot());
+            }
+
+            List<Pot> pots = game.getMiniPots();
+            if(pots.size()==0){
+                pots.add(new Pot(nextPlayer.getId(), splitPot));
+            } else {
+                Pot pot = pots.get(pots.size()-1);
+                pots.add(new Pot(nextPlayer.getId(), splitPot - pot.getAmount()));
+            }
+            
+            game.setMiniPots(pots);
+        }
+
+        nextPlayer.setIsPlayerTurn(true);
     }
 
     private void updatePlayerBasedOnMove(Player player, Game game, MoveType move, Long betAmount) {
@@ -43,12 +79,8 @@ public class PlayMoveService {
     }
 
     private Player getPlayerBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
-        betAmount = getBetAmountBasedOnMove(move, betAmount, player, game);
 
-        Player updatedPlayer = player.toBuilder()
-                .isPlayerTurn(false).currentMoney(player.getCurrentMoney() - betAmount)
-                .moneyInPot(player.getMoneyInPot() + betAmount)
-                .build();
+        Player updatedPlayer = player.toBuilder().isPlayerTurn(false).build();
 
         switch (move) {
             case FOLD:
@@ -56,42 +88,31 @@ public class PlayMoveService {
                 updatedPlayer.setIsCurrentlyPlaying(false);
                 break;
             case RAISE, ALL_IN:
+                updatedPlayer.setCurrentMoney(player.getCurrentMoney() - (betAmount - updatedPlayer.getMoneyInPot()));
+                updatedPlayer.setMoneyInPot(betAmount);
                 updatedPlayer.setIsLastRaisedPlayer(true);
+                break;
+            case CALL:
+                updatedPlayer.setCurrentMoney(player.getCurrentMoney() - betAmount);
+                updatedPlayer.setMoneyInPot(player.getMoneyInPot() + betAmount);
                 break;
             default:
         }
         return updatedPlayer;
     }
 
-    private Long getBetAmountBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
-        Boolean moveIsCallCheckOrFold = move == MoveType.CALL || move == MoveType.CHECK || move == MoveType.FOLD;
-        if (player.getIsCurrentSmallBetPlayer() && moveIsCallCheckOrFold) {
-            betAmount = game.getGameSettings().getSmallBet();
-        } else if (player.getIsCurrentBigBetPlayer() && moveIsCallCheckOrFold) {
-            betAmount = game.getGameSettings().getBigBet();
-        } else if (move == MoveType.ALL_IN) {
-            betAmount = player.getCurrentMoney();
-        } else if (move == MoveType.RAISE) {
-            betAmount = betAmount + game.getLastCalledAmount();
-        } else if (move == MoveType.CALL) {
-            betAmount = game.getLastCalledAmount();
-        } else if (move == MoveType.CHECK) {
-            betAmount = 0L;
-        } else if (move == MoveType.FOLD) {
-            betAmount = 0L;
-        }
-        return betAmount;
-    }
-
     private void updateGameBasedOnMove(Game game, Player player, MoveType move, Long betAmount) {
         if (player.getIsLastRaisedPlayer()) {
             game.setRoundNumber(game.getRoundNumber() + 1);
         }
-        if (move == MoveType.RAISE || move == MoveType.ALL_IN) {
-            game.setLastCalledAmount(game.getLastCalledAmount() + betAmount);
+
+        if(move == MoveType.CALL) {
+            game.setMoneyOnTable(game.getMoneyOnTable() + betAmount);
         }
-        betAmount = getBetAmountBasedOnMove(move, betAmount, player, game);
-        game.setMoneyOnTable(game.getMoneyOnTable() + betAmount);
+        else if (move == MoveType.ALL_IN || move == MoveType.RAISE) {
+            game.setMoneyOnTable(game.getMoneyOnTable() + (betAmount - player.getMoneyInPot()));
+        }
+
         gameRepository.save(game);
     }
 }
