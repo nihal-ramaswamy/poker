@@ -29,7 +29,7 @@ public class Player {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "game_id", nullable = false)
+    @Column(name = "game_id")
     private String currentGameID;
 
     @Column(nullable = false)
@@ -41,10 +41,8 @@ public class Player {
     @Column(nullable = false)
     private Boolean isCurrentlyPlaying;
 
-    @Column(nullable = false)
     private Boolean isCurrentSmallBetPlayer;
 
-    @Column(nullable = false)
     private Boolean isCurrentBigBetPlayer;
 
     @Column(nullable = false)

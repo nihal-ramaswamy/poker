@@ -32,9 +32,7 @@ public class GameSettings implements Serializable {
     @Column(nullable = false)
     private Boolean exposeWinnerDetails;
 
-    @Column(nullable = false)
     private Long currentSmallBetPlayerId;
 
-    @Column(nullable = false)
     private Long currentBigBetPlayerId;
 }

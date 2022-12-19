@@ -5,14 +5,19 @@ import axios from "./config/axios";
 export default function App() {
   const [gameID, setGameID] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [playerID, setPlayerID] = useState<string>("");
 
   const joinGame = async () => {
-    const {
-      data: { playerID },
-    } = await axios.post("/game/join", {
-      gameID,
-      playerUsername: username,
-    });
+    console.log(axios.getUri());
+    try {
+      const res = await axios.post("/game/join", {
+          gameID: gameID,
+          playerUsername: username,
+      });
+      setPlayerID(res.data.playerID);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -30,6 +35,7 @@ export default function App() {
       </View>
       <TextInput style={styles.input} onChangeText={setGameID} value={gameID} />
       <Button onPress={joinGame} title="Join Game" />
+      <Text>{playerID}</Text>
     </View>
   );
 }
