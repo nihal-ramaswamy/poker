@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import axios from "./config/axios";
+import { GAME_SERVICE_WS_URL } from "@env";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+
+let stompClient: CompatClient | null = null;
 
 export default function App() {
   const [gameID, setGameID] = useState<string>("");
@@ -14,11 +19,33 @@ export default function App() {
           gameID: gameID,
           playerUsername: username,
       });
+      console.log(res.data);
       setPlayerID(res.data.playerID);
     } catch (e) {
       console.log(e);
     }
   };
+
+  const connect = () => {
+    const socket = new SockJS(GAME_SERVICE_WS_URL);
+    stompClient = Stomp.over(socket);
+    stompClient.debug = () => null;
+
+    stompClient.connect({}, async () => {
+      const gameStartURL = `${GAME_SERVICE_WS_URL}/${playerID}/start-game-state`;
+      stompClient?.subscribe(gameStartURL, message => {
+        console.log(message);
+        console.log(JSON.parse(message.body));
+      })
+    })
+  }
+
+
+  useEffect(() => {
+    if (playerID !== "" && stompClient === null) {
+      connect();
+    }
+  }, [playerID]);
 
   return (
     <View style={styles.container}>

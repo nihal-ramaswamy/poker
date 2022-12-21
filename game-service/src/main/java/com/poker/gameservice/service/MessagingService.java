@@ -3,12 +3,14 @@ package com.poker.gameservice.service;
 import com.poker.gameservice.model.dto.PlayerJoinAdminMessage;
 import com.poker.gameservice.model.dto.StartPlayerGameState;
 import com.poker.gameservice.model.entity.Player;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class MessagingService {
     private final SimpMessagingTemplate messagingTemplate;
@@ -24,6 +26,7 @@ public class MessagingService {
     }
 
     private void informPlayerStartGameState(StartPlayerGameState startPlayerGameState) {
+        log.info("Sending start game state to " + startPlayerGameState.getPlayerId());
         String onStartUrl = "/player/" + startPlayerGameState.getPlayerId() + "/start-game-state";
         messagingTemplate.convertAndSend(onStartUrl, startPlayerGameState);
 

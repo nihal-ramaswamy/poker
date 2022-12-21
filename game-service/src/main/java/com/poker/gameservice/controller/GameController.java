@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -64,8 +65,9 @@ public class GameController {
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 
-    @MessageMapping("/start/{gameID}")
-    public void startGame(@PathVariable String gameID) {
+    @MessageMapping("/start")
+    public void startGame(@Payload String gameID) {
+        log.info("Game ID: " + gameID + " requested to start");
         List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
         messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
     }
