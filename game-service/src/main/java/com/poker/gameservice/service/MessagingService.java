@@ -33,7 +33,9 @@ public class MessagingService {
     }
 
     public void informAllPlayersStartGameState(List<StartPlayerGameState> startPlayerGameStateList) {
+        log.info("Informing " + startPlayerGameStateList.size() + " about commence of game");
         for (StartPlayerGameState startPlayerGameState: startPlayerGameStateList) {
+            log.info(String.valueOf(startPlayerGameState));
             informPlayerStartGameState(startPlayerGameState);
         }
     }

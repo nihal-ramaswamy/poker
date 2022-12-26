@@ -10,11 +10,13 @@ import com.poker.gameservice.repository.GameRepository;
 import com.poker.gameservice.repository.PlayerRepository;
 import com.poker.gameservice.util.CardUtils;
 import com.poker.gameservice.util.RandomStringGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class GameService {
     private final GameRepository gameRepository;
@@ -99,10 +101,12 @@ public class GameService {
 
     public List<StartPlayerGameState> startGame(String gameID) {
         Game game = this.gameRepository.findGameById(gameID);
+        log.info(String.valueOf(game));
         Integer numDecks = game.getGameSettings().getNumberOfDecks();
         Long startMoney = game.getGameSettings().getStartingMoney();
 
         List<Player> playersInGame = playerRepository.findPlayersByCurrentGameID(gameID);
+        log.info(String.valueOf(playersInGame));
 
         List<Long> chosenPlayers = getTwoRandomPlayersWithoutRepetition(playersInGame);
         Long smallBetPlayer = chosenPlayers.get(0);

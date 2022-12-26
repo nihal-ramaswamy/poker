@@ -3,7 +3,10 @@ import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import SockJS from "sockjs-client";
 import axios from "../config/axios";
-import { GAME_SERVICE_WS_URL } from "../config/constants";
+import {
+  GAME_SERVICE_BASE_URL,
+  GAME_SERVICE_WS_URL,
+} from "../config/constants";
 import Player from "../types/Player";
 
 let stompClient: CompatClient | null = null;
@@ -85,8 +88,8 @@ const Home: NextPage = () => {
   }, []);
 
   const startGame = () => {
-    stompClient?.send(`/admin/game/start`, {}, gameID);
-  }
+    axios.get(`${GAME_SERVICE_BASE_URL}/game/${gameID}/start`);
+  };
 
   return (
     <div>
@@ -112,7 +115,6 @@ const Home: NextPage = () => {
           >
             Start game
           </button>
-
         </div>
       ) : (
         <div className="p-5">

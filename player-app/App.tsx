@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import axios from "./config/axios";
-import { GAME_SERVICE_WS_URL } from "@env";
+import { GAME_SERVICE_WS_URL } from "./config/axios";
 import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 
@@ -16,8 +16,8 @@ export default function App() {
     console.log(axios.getUri());
     try {
       const res = await axios.post("/game/join", {
-          gameID: gameID,
-          playerUsername: username,
+        gameID: gameID,
+        playerUsername: username,
       });
       console.log(res.data);
       setPlayerID(res.data.playerID);
@@ -27,19 +27,20 @@ export default function App() {
   };
 
   const connect = () => {
+    console.log("Inside connect");
+    console.log(GAME_SERVICE_WS_URL);
     const socket = new SockJS(GAME_SERVICE_WS_URL);
     stompClient = Stomp.over(socket);
     stompClient.debug = () => null;
 
     stompClient.connect({}, async () => {
       const gameStartURL = `${GAME_SERVICE_WS_URL}/${playerID}/start-game-state`;
-      stompClient?.subscribe(gameStartURL, message => {
+      stompClient?.subscribe(gameStartURL, (message) => {
         console.log(message);
         console.log(JSON.parse(message.body));
-      })
-    })
-  }
-
+      });
+    });
+  };
 
   useEffect(() => {
     if (playerID !== "" && stompClient === null) {

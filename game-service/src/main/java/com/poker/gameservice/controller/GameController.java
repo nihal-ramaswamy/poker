@@ -65,8 +65,8 @@ public class GameController {
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);
     }
 
-    @MessageMapping("/start")
-    public void startGame(@Payload String gameID) {
+    @GetMapping("/{gameID}/start")
+    public void startGame(@PathVariable String gameID) {
         log.info("Game ID: " + gameID + " requested to start");
         List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
         messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
