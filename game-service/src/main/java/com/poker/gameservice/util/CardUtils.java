@@ -8,7 +8,8 @@ import java.util.Random;
 
 public class CardUtils {
     public static List<String> suite = new ArrayList<>(List.of("Diamond", "Spade", "Club", "Heart"));
-    public static List<String> rank = new ArrayList<>(List.of("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"));
+    public static List<String> rank = new ArrayList<>(
+            List.of("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"));
 
     public static List<Card> generateDeck() {
         List<String> suite = CardUtils.suite;
@@ -36,9 +37,6 @@ public class CardUtils {
         return availableCards;
     }
 
-    /*
-     * @param numDecks Number of decks in the game
-     * */
     public static List<Card> getFlopCards(Integer numDecks) {
         List<Card> availableCards = getStartingDeck(numDecks);
 
@@ -60,6 +58,6 @@ public class CardUtils {
 
     // availableCards should be pre-shuffled
     public static List<Card> getHandCards(List<Card> availableCards) {
-        return List.of(availableCards.get(0), availableCards.get(1));
+        return new ArrayList<Card>(List.of(availableCards.get(0), availableCards.get(1)));
     }
 }

@@ -23,7 +23,7 @@ public class GameService {
     private final PlayerRepository playerRepository;
 
     @Autowired
-    GameService(GameRepository gameRepository, PlayerRepository playerRepository) {
+    public GameService(GameRepository gameRepository, PlayerRepository playerRepository) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
     }
@@ -46,8 +46,6 @@ public class GameService {
         return randomPlayerList;
     }
 
-
-
     private void updateGameInDB(Game game, List<Card> availableCards, List<Long> chosenPlayers) {
         game.setCardsOnTable(null);
         game.setHasGameStarted(true);
@@ -62,7 +60,8 @@ public class GameService {
         gameRepository.save(game);
     }
 
-    private void updatePlayerInDB(Player player, Long bigBetPlayer, Long smallBetPlayer, Long startMoney, List<Card> deckInHand) {
+    private void updatePlayerInDB(Player player, Long bigBetPlayer, Long smallBetPlayer, Long startMoney,
+            List<Card> deckInHand) {
         Boolean isBigBetPlayer = Objects.equals(bigBetPlayer, player.getId());
         Boolean isSmallBetPlayer = Objects.equals(smallBetPlayer, player.getId());
 
@@ -116,12 +115,12 @@ public class GameService {
 
         List<StartPlayerGameState> startPlayerGameStateList = new ArrayList<>();
 
-        for (Player player: playersInGame) {
+        for (Player player : playersInGame) {
             List<Card> deckInHand = CardUtils.getHandCards(availableCards);
             availableCards.removeAll(deckInHand);
 
-            StartPlayerGameState startPlayerGameState =
-                    new StartPlayerGameState(player.getId(), startMoney, bigBetPlayer, smallBetPlayer, deckInHand);
+            StartPlayerGameState startPlayerGameState = new StartPlayerGameState(player.getId(), startMoney,
+                    bigBetPlayer, smallBetPlayer, deckInHand);
 
             updatePlayerInDB(player, bigBetPlayer, smallBetPlayer, startMoney, deckInHand);
 

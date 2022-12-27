@@ -1,21 +1,31 @@
 package com.poker.gameservice.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.poker.gameservice.exception.GameDoesNotExistException;
-import com.poker.gameservice.model.dto.*;
+import com.poker.gameservice.model.dto.CreateGameRequest;
+import com.poker.gameservice.model.dto.CreateGameResponse;
+import com.poker.gameservice.model.dto.GetGameStateResponse;
+import com.poker.gameservice.model.dto.PlayerJoinRequest;
+import com.poker.gameservice.model.dto.PlayerJoinResponse;
+import com.poker.gameservice.model.dto.StartPlayerGameState;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
 import com.poker.gameservice.service.MessagingService;
 import com.poker.gameservice.service.PlayerService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -66,9 +76,10 @@ public class GameController {
     }
 
     @GetMapping("/{gameID}/start")
-    public void startGame(@PathVariable String gameID) {
+    public ResponseEntity<String> startGame(@PathVariable String gameID) {
         log.info("Game ID: " + gameID + " requested to start");
         List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
         messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
+        return ResponseEntity.ok("");
     }
 }
