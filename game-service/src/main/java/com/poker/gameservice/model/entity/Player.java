@@ -15,10 +15,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "player")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity(name = "player")
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
@@ -28,22 +28,20 @@ public class Player {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "game_id", nullable = false)
+    @Column(name = "game_id")
     private String currentGameID;
 
     @Column(nullable = false)
     private Long currentMoney;
 
     @Column(nullable = false)
-    private Long moneyInPot;
+    private Long betMoneyInPot;
 
     @Column(nullable = false)
     private Boolean isCurrentlyPlaying;
 
-    @Column(nullable = false)
     private Boolean isCurrentSmallBetPlayer;
 
-    @Column(nullable = false)
     private Boolean isCurrentBigBetPlayer;
 
     @Column(nullable = false)

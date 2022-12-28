@@ -1,35 +1,85 @@
-import { useState } from "react";
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import BigInt from "big-integer";
+import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import axios from "./config/axios";
+import SockJS from "sockjs-client";
+import { TextDecoder, TextEncoder } from "text-encoding";
+import axios, { GAME_SERVICE_WS_URL } from "./config/axios";
+
+polyFillTextEncoder();
+
+let stompClient: CompatClient | null = null;
 
 export default function App() {
   const [gameID, setGameID] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [playerID, setPlayerID] = useState<string>("");
+  const [body, setBody] = useState<any>(null);
+  const isLoggedIn = playerID !== "";
 
   const joinGame = async () => {
-    const {
-      data: { playerID },
-    } = await axios.post("/game/join", {
-      gameID,
-      playerUsername: username,
+    try {
+      console.log("Joining game:", gameID);
+      const {
+        data: { playerID },
+      } = await axios.post("/game/join", {
+        gameID: gameID,
+        playerUsername: username,
+      });
+      console.log("Player ID is:", playerID);
+      setPlayerID(playerID);
+    } catch (err) {
+      console.log("join game failed: ", err);
+    }
+  };
+
+  const connect = () => {
+    const socket = new SockJS(GAME_SERVICE_WS_URL);
+    stompClient = Stomp.over(socket);
+    stompClient.debug = () => null;
+
+    stompClient.connect({}, async () => {
+      const gameStartURL = `/player/${playerID}/start-game-state`;
+      stompClient?.subscribe(gameStartURL, (message) => {
+        setBody(JSON.parse(message.body));
+        console.log(JSON.parse(message.body));
+      });
     });
   };
 
+  useEffect(() => {
+    if (isLoggedIn && stompClient === null) {
+      connect();
+    }
+  }, [playerID]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Username</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        onChangeText={setUsername}
-        value={username}
-      />
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Game ID</Text>
-      </View>
-      <TextInput style={styles.input} onChangeText={setGameID} value={gameID} />
-      <Button onPress={joinGame} title="Join Game" />
+      {isLoggedIn ? (
+        <View>
+          <Text>Player ID: {playerID}</Text>
+        </View>
+      ) : (
+        <>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Username</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+          />
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Game ID</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGameID}
+            value={gameID}
+          />
+          <Button onPress={joinGame} title="Join Game" />
+        </>
+      )}
     </View>
   );
 }
@@ -55,3 +105,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+
+// TextEncoder polyfill: https://stackoverflow.com/questions/55868484/referenceerror-cant-find-variable-textencoder
+function polyFillTextEncoder() {
+  Object.assign(global, {
+    TextEncoder,
+    TextDecoder,
+    BigInt,
+  });
+}

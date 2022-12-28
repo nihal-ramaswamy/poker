@@ -1,9 +1,11 @@
 package com.poker.gameservice.model.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class PlayerJoinRequest {
+@AllArgsConstructor
+public class  PlayerJoinRequest {
     String gameID;
     String playerUsername;
 }

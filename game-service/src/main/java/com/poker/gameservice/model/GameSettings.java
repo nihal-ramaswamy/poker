@@ -1,24 +1,24 @@
 package com.poker.gameservice.model;
 
-import java.io.Serializable;
-
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameSettings implements Serializable {
     @Column(nullable = false)
-    private Integer startingMoney;
+    private Long startingMoney;
 
     @Column(nullable = false)
-    private Integer smallBet;
+    private Long smallBet;
 
     @Column(nullable = false)
-    private Integer bigBet;
+    private Long bigBet;
 
     @Column(nullable = false)
     private StartingBetSettings startingBetSettings;
@@ -31,4 +31,8 @@ public class GameSettings implements Serializable {
 
     @Column(nullable = false)
     private Boolean exposeWinnerDetails;
+
+    private Long currentSmallBetPlayerId;
+
+    private Long currentBigBetPlayerId;
 }

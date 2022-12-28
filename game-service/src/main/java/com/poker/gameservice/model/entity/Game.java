@@ -32,7 +32,7 @@ public class Game {
     private Integer roundNumber;
 
     @Column(nullable = false)
-    private String adminName;
+    private String adminId;
 
     @Column(nullable = false)
     private Long lastRaisedAmount;
