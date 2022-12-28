@@ -2,6 +2,7 @@ package com.poker.gameservice.controller;
 
 import java.util.List;
 
+import com.poker.gameservice.exception.NotEnoughPlayersException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,9 +78,13 @@ public class GameController {
 
     @GetMapping("/{gameID}/start")
     public ResponseEntity<String> startGame(@PathVariable String gameID) {
-        log.info("Game ID: " + gameID + " requested to start");
-        List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
-        messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
-        return ResponseEntity.ok("");
+        try {
+            log.info("Game ID: " + gameID + " requested to start");
+            List<StartPlayerGameState> startPlayerGameStateList = gameService.startGame(gameID);
+            messagingService.informAllPlayersStartGameState(startPlayerGameStateList);
+            return ResponseEntity.ok("Informed all players about start of game.");
+        } catch (NotEnoughPlayersException e) {
+            return new ResponseEntity<>("Not enough players in the game to begin", HttpStatus.BAD_REQUEST);
+        }
     }
 }

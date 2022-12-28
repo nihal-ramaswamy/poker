@@ -14,6 +14,7 @@ export default function App() {
   const [gameID, setGameID] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [playerID, setPlayerID] = useState<string>("");
+  const [body, setBody] = useState<any>(null);
   const isLoggedIn = playerID !== "";
 
   const joinGame = async () => {
@@ -40,8 +41,8 @@ export default function App() {
     stompClient.connect({}, async () => {
       const gameStartURL = `/player/${playerID}/start-game-state`;
       stompClient?.subscribe(gameStartURL, (message) => {
-        const body = JSON.parse(message.body);
-        console.log("Game started:", body);
+        setBody(JSON.parse(message.body));
+        console.log(JSON.parse(message.body));
       });
     });
   };
@@ -55,7 +56,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       {isLoggedIn ? (
-        <Text>Player ID: {playerID}</Text>
+        <View>
+          <Text>Player ID: {playerID}</Text>
+        </View>
       ) : (
         <>
           <View style={styles.labelContainer}>

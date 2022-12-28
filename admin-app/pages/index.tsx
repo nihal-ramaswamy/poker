@@ -86,8 +86,15 @@ const Home: NextPage = () => {
     }
   }, []);
 
-  const startGame = () => {
-    axios.get(`${GAME_SERVICE_BASE_URL}/game/${gameID}/start`);
+  const startGame = async () => {
+    try {
+      const res = await axios.get(
+        `${GAME_SERVICE_BASE_URL}/game/${gameID}/start`
+      );
+      console.log(res.data);
+    } catch (err: any) {
+      console.log(err.response);
+    }
   };
 
   return (

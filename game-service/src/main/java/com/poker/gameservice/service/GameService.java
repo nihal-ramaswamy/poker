@@ -1,6 +1,7 @@
 package com.poker.gameservice.service;
 
 import com.poker.gameservice.exception.GameDoesNotExistException;
+import com.poker.gameservice.exception.NotEnoughPlayersException;
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.GameSettings;
 import com.poker.gameservice.model.dto.StartPlayerGameState;
@@ -98,7 +99,7 @@ public class GameService {
         return gameID;
     }
 
-    public List<StartPlayerGameState> startGame(String gameID) {
+    public List<StartPlayerGameState> startGame(String gameID) throws NotEnoughPlayersException {
         Game game = this.gameRepository.findGameById(gameID);
         log.info(String.valueOf(game));
         Integer numDecks = game.getGameSettings().getNumberOfDecks();
@@ -106,6 +107,10 @@ public class GameService {
 
         List<Player> playersInGame = playerRepository.findPlayersByCurrentGameID(gameID);
         log.info(String.valueOf(playersInGame));
+
+        if (playersInGame.size() < 2) {
+            throw new NotEnoughPlayersException();
+        }
 
         List<Long> chosenPlayers = getTwoRandomPlayersWithoutRepetition(playersInGame);
         Long smallBetPlayer = chosenPlayers.get(0);
