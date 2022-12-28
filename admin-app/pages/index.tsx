@@ -19,7 +19,6 @@ const Home: NextPage = () => {
   const [hasStarted, setHasStarted] = useState<boolean>(false);
 
   const createGame = async () => {
-    console.log(username);
     const {
       data: { gameID },
     } = await axios.post("/game/create", {
@@ -55,11 +54,11 @@ const Home: NextPage = () => {
     stompClient = Stomp.over(socket);
     stompClient.debug = () => null;
     stompClient.connect({}, async () => {
+      console.log("Connected.");
       fetchCurrentGameStatus();
 
-      const onJoinURL = "/admin/" + gameID + "/on-join";
+      const onJoinURL = `/admin/${gameID}/on-join`;
       stompClient?.subscribe(onJoinURL, (message) => {
-        console.log(JSON.parse(message.body));
         const { playerUsername, playerID } = JSON.parse(message.body);
         setPlayers((players) => [
           ...players,

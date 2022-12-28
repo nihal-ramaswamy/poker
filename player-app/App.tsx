@@ -1,9 +1,12 @@
+import { CompatClient, Stomp } from "@stomp/stompjs";
+import BigInt from "big-integer";
 import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import axios from "./config/axios";
-import { GAME_SERVICE_WS_URL } from "./config/axios";
-import { CompatClient, Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { TextDecoder, TextEncoder } from "text-encoding";
+import axios, { GAME_SERVICE_WS_URL } from "./config/axios";
+
+polyFillTextEncoder();
 
 let stompClient: CompatClient | null = null;
 
@@ -11,59 +14,69 @@ export default function App() {
   const [gameID, setGameID] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [playerID, setPlayerID] = useState<string>("");
+  const isLoggedIn = playerID !== "";
 
   const joinGame = async () => {
-    console.log(axios.getUri());
     try {
-      const res = await axios.post("/game/join", {
+      console.log("Joining game:", gameID);
+      const {
+        data: { playerID },
+      } = await axios.post("/game/join", {
         gameID: gameID,
         playerUsername: username,
       });
-      console.log(res.data);
-      setPlayerID(res.data.playerID);
-    } catch (e) {
-      console.log(e);
+      console.log("Player ID is:", playerID);
+      setPlayerID(playerID);
+    } catch (err) {
+      console.log("join game failed: ", err);
     }
   };
 
   const connect = () => {
-    console.log("Inside connect");
-    console.log(GAME_SERVICE_WS_URL);
     const socket = new SockJS(GAME_SERVICE_WS_URL);
     stompClient = Stomp.over(socket);
     stompClient.debug = () => null;
 
     stompClient.connect({}, async () => {
-      const gameStartURL = `${GAME_SERVICE_WS_URL}/${playerID}/start-game-state`;
+      const gameStartURL = `/player/${playerID}/start-game-state`;
       stompClient?.subscribe(gameStartURL, (message) => {
-        console.log(message);
-        console.log(JSON.parse(message.body));
+        const body = JSON.parse(message.body);
+        console.log("Game started:", body);
       });
     });
   };
 
   useEffect(() => {
-    if (playerID !== "" && stompClient === null) {
+    if (isLoggedIn && stompClient === null) {
       connect();
     }
   }, [playerID]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Username</Text>
-      </View>
-      <TextInput
-        style={styles.input}
-        onChangeText={setUsername}
-        value={username}
-      />
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Game ID</Text>
-      </View>
-      <TextInput style={styles.input} onChangeText={setGameID} value={gameID} />
-      <Button onPress={joinGame} title="Join Game" />
-      <Text>{playerID}</Text>
+      {isLoggedIn ? (
+        <Text>Player ID: {playerID}</Text>
+      ) : (
+        <>
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Username</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+          />
+          <View style={styles.labelContainer}>
+            <Text style={styles.label}>Game ID</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            onChangeText={setGameID}
+            value={gameID}
+          />
+          <Button onPress={joinGame} title="Join Game" />
+        </>
+      )}
     </View>
   );
 }
@@ -89,3 +102,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+
+// TextEncoder polyfill: https://stackoverflow.com/questions/55868484/referenceerror-cant-find-variable-textencoder
+function polyFillTextEncoder() {
+  Object.assign(global, {
+    TextEncoder,
+    TextDecoder,
+    BigInt,
+  });
+}
