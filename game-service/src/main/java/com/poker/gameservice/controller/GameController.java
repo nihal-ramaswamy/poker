@@ -24,7 +24,6 @@ import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.service.GameService;
 import com.poker.gameservice.service.MessagingService;
-import com.poker.gameservice.service.PlayerService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,13 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/game")
 public class GameController {
     private final GameService gameService;
-    private final PlayerService playerService;
     private final MessagingService messagingService;
 
     @Autowired
-    public GameController(GameService gameService, PlayerService playerService, MessagingService messagingService) {
+    public GameController(GameService gameService, MessagingService messagingService) {
         this.gameService = gameService;
-        this.playerService = playerService;
         this.messagingService = messagingService;
     }
 

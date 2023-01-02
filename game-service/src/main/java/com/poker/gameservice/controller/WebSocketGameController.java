@@ -8,21 +8,21 @@ import org.springframework.stereotype.Controller;
 import com.poker.gameservice.model.dto.OnMoveRequest;
 import com.poker.gameservice.service.PlayMoveService;
 
-
 @Controller
 public class WebSocketGameController {
 
     private PlayMoveService playMoveService;
 
-    @Autowired 
+    @Autowired
     public void setPlayMoveService(PlayMoveService playMoveService) {
         this.playMoveService = playMoveService;
     }
-    
+
     @MessageMapping("/game/play-move")
     public void playMove(@Payload OnMoveRequest request) {
         System.out.println("Received request: " + request);
-        playMoveService.playMove(request.getGameId(), request.getPlayerId(), request.getMoveType(), request.getBetAmount());
+        // TODO: Handle errors thrown
+        playMoveService.playMove(request.getGameId(), request.getPlayerId(), request.getMoveType(),
+                request.getBetAmount());
     }
-    
 }

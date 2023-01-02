@@ -42,8 +42,10 @@ public class Player {
     @Column(nullable = false)
     private Boolean isCurrentlyPlaying;
 
+    @Column(nullable = false)
     private Boolean isCurrentSmallBetPlayer;
 
+    @Column(nullable = false)
     private Boolean isCurrentBigBetPlayer;
 
     @Column(nullable = false)

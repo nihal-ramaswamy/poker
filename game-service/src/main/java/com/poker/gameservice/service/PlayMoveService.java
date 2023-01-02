@@ -1,10 +1,13 @@
 package com.poker.gameservice.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.poker.gameservice.exception.GameDoesNotExistException;
+import com.poker.gameservice.exception.PlayerDoesNotExistException;
 import com.poker.gameservice.model.MoveType;
 import com.poker.gameservice.model.Pot;
 import com.poker.gameservice.model.entity.Game;
@@ -23,10 +26,20 @@ public class PlayMoveService {
         this.playerRepository = playerRepository;
     }
 
-    public void playMove(String gameID, Long playerID, MoveType move, Long betAmount) {
+    public void playMove(String gameID, Long playerID, MoveType move, Long betAmount)
+            throws PlayerDoesNotExistException, GameDoesNotExistException {
+        Optional<Player> optionalPlayer = playerRepository.findById(playerID);
+        if (optionalPlayer.isEmpty()) {
+            throw new PlayerDoesNotExistException();
+        }
 
-        Player player = playerRepository.findById(playerID).get();
-        Game game = gameRepository.findById(gameID).get();
+        Optional<Game> optionalGame = gameRepository.findById(gameID);
+        if (optionalGame.isEmpty()) {
+            throw new GameDoesNotExistException();
+        }
+
+        Player player = optionalPlayer.get();
+        Game game = optionalGame.get();
         List<Player> players = game.getPlayers();
 
         if (player.getIsPlayerTurn() && player.getIsCurrentlyPlaying()) {
@@ -34,7 +47,6 @@ public class PlayMoveService {
             updateGameBasedOnMove(game, player, move, betAmount);
             updateNextPlayer(playerID, players, game);
         }
-
     }
 
     private void updateNextPlayer(Long playerID, List<Player> players, Game game) {
@@ -50,8 +62,10 @@ public class PlayMoveService {
                 break;
             }
         }
-        Long splitPot = 0L;
-        if (nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying()) {
+
+        boolean isNextPlayerAllIn = nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying();
+        if (isNextPlayerAllIn) {
+            Long splitPot = 0L;
             nextPlayer.setIsCurrentlyPlaying(false);
             for (Player p : players) {
                 splitPot += Math.min(p.getCurrentMoney(), nextPlayer.getMoneyInPot());
@@ -67,7 +81,6 @@ public class PlayMoveService {
 
             game.setMiniPots(pots);
         }
-
         nextPlayer.setIsPlayerTurn(true);
     }
 
@@ -77,7 +90,6 @@ public class PlayMoveService {
     }
 
     private Player getPlayerBasedOnMove(MoveType move, Long betAmount, Player player, Game game) {
-
         Player updatedPlayer = player.toBuilder().isPlayerTurn(false).build();
 
         switch (move) {
@@ -102,6 +114,19 @@ public class PlayMoveService {
     private void updateGameBasedOnMove(Game game, Player player, MoveType move, Long betAmount) {
         if (player.getIsLastRaisedPlayer()) {
             game.setRoundNumber(game.getRoundNumber() + 1);
+            // TODO: if current round is last round: End game
+            // Else, handle new card shown on new round
+
+            boolean isLastRound = game.getCardsOnTable().size() == 5;
+            if (isLastRound) {
+                // TODO: Handle scoring and calculation.
+            } else {
+                if (game.getAvailableCardsInDeck() == null) {
+                    // TODO: Draw 3 random flop cards from available cards.
+                } else {
+                    // TODO: Draw a single card.
+                }
+            }
         }
 
         if (move == MoveType.CALL) {
