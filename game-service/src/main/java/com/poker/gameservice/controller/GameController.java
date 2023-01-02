@@ -70,7 +70,7 @@ public class GameController {
         log.info("Game ID: " + request.getGameID());
         log.info("Player Username: " + request.getPlayerUsername());
 
-        Player player = playerService.getPlayerIfExistsElseCreate(playerUsername, gameID);
+        Player player = gameService.getPlayerIfExistsElseCreate(playerUsername, gameID);
         Long playerID = player.getId();
         messagingService.informPlayerJoinToAdmin(gameID, player);
         return new ResponseEntity<>(new PlayerJoinResponse(playerID), HttpStatus.OK);

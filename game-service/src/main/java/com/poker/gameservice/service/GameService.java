@@ -1,9 +1,19 @@
 package com.poker.gameservice.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.poker.gameservice.exception.GameDoesNotExistException;
 import com.poker.gameservice.exception.NotEnoughPlayersException;
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.GameSettings;
+import com.poker.gameservice.model.Pot;
 import com.poker.gameservice.model.dto.StartPlayerGameState;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
@@ -11,11 +21,8 @@ import com.poker.gameservice.repository.GameRepository;
 import com.poker.gameservice.repository.PlayerRepository;
 import com.poker.gameservice.util.CardUtils;
 import com.poker.gameservice.util.RandomStringGenerator;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -67,7 +74,7 @@ public class GameService {
         Boolean isSmallBetPlayer = Objects.equals(smallBetPlayer, player.getId());
 
         player.setCurrentMoney(startMoney);
-        player.setBetMoneyInPot(0L);
+        player.setMoneyInPot(0L);
         player.setIsLastRaisedPlayer(isSmallBetPlayer);
         player.setIsPlayerTurn(isSmallBetPlayer);
         player.setIsCurrentSmallBetPlayer(isSmallBetPlayer);
@@ -84,17 +91,19 @@ public class GameService {
             gameID = RandomStringGenerator.generate();
         } while (gameRepository.findById(gameID).isPresent());
 
+        List<Pot> pots = new ArrayList<>();
+
         gameRepository.save(new Game(
                 gameID,
                 false,
                 0,
                 adminUserName,
                 0L,
-                0L,
                 new ArrayList<>(),
                 null,
                 null,
-                gameSettings));
+                gameSettings,
+                pots));
 
         return gameID;
     }
@@ -143,5 +152,14 @@ public class GameService {
             throw new GameDoesNotExistException();
         }
         return gameOptional.get();
+    }
+
+    public Player getPlayerIfExistsElseCreate(String username, String gameID) {
+        Optional<Player> playerOptional = playerRepository.findByUsernameAndCurrentGameID(username, gameID);
+        if (playerOptional.isPresent()) {
+            return playerOptional.get();
+        }
+        Player player = new Player(null, username, gameID, 0L, 0L, false, false, false, false, false, null);
+        return playerRepository.save(player);
     }
 }

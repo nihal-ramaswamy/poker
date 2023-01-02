@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.poker.gameservice.model.entity.Player;
 
 @Repository
-public interface PlayerRepository extends JpaRepository<Player, String> {
-    List<Player> findPlayersByCurrentGameID(String gameId);
-    Optional<Player> findByUsernameAndCurrentGameID(String username, String gameID);
+public interface PlayerRepository extends JpaRepository<Player, Long> {
+    public List<Player> findPlayersByCurrentGameID(String gameId);
+
+    public Optional<Player> findByUsernameAndCurrentGameID(String username, String gameID);
 }

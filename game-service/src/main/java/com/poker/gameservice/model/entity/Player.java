@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "player")
+@Builder(toBuilder = true)
 public class Player {
     @Id
     @GeneratedValue(generator = "player_id_generator", strategy = GenerationType.SEQUENCE)
@@ -35,7 +37,7 @@ public class Player {
     private Long currentMoney;
 
     @Column(nullable = false)
-    private Long betMoneyInPot;
+    private Long moneyInPot;
 
     @Column(nullable = false)
     private Boolean isCurrentlyPlaying;

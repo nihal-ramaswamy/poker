@@ -24,6 +24,9 @@ public class GameSettings implements Serializable {
     private StartingBetSettings startingBetSettings;
 
     @Column(nullable = false)
+    private Long lastRaisedAmount;
+
+    @Column(nullable = false)
     private Integer timeLimit;
 
     @Column(nullable = false)
