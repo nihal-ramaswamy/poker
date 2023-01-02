@@ -8,12 +8,14 @@ import org.springframework.stereotype.Service;
 
 import com.poker.gameservice.exception.GameDoesNotExistException;
 import com.poker.gameservice.exception.PlayerDoesNotExistException;
+import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.MoveType;
 import com.poker.gameservice.model.Pot;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.repository.GameRepository;
 import com.poker.gameservice.repository.PlayerRepository;
+import com.poker.gameservice.util.CardUtils;
 
 @Service
 public class PlayMoveService {
@@ -108,23 +110,36 @@ public class PlayMoveService {
                 break;
             default:
         }
+
         return updatedPlayer;
     }
 
     private void updateGameBasedOnMove(Game game, Player player, MoveType move, Long betAmount) {
         if (player.getIsLastRaisedPlayer()) {
             game.setRoundNumber(game.getRoundNumber() + 1);
-            // TODO: if current round is last round: End game
-            // Else, handle new card shown on new round
 
             boolean isLastRound = game.getCardsOnTable().size() == 5;
             if (isLastRound) {
                 // TODO: Handle scoring and calculation.
             } else {
-                if (game.getAvailableCardsInDeck() == null) {
-                    // TODO: Draw 3 random flop cards from available cards.
+                List<Card> availableCards = game.getAvailableCardsInDeck();
+                boolean isFirstRound = availableCards.isEmpty();
+                if (isFirstRound) {
+                    Integer numberOfDecks = game.getGameSettings().getNumberOfDecks();
+                    availableCards = CardUtils.getStartingDeck(numberOfDecks);
+                    List<Card> flopCards = CardUtils.getFlopCards(numberOfDecks);
+                    availableCards.removeAll(flopCards);
+
+                    game.setAvailableCardsInDeck(availableCards);
+                    game.setCardsOnTable(flopCards);
                 } else {
-                    // TODO: Draw a single card.
+                    Card randomCard = CardUtils.getRandomCard(availableCards);
+                    availableCards.remove(randomCard);
+                    game.setAvailableCardsInDeck(availableCards);
+
+                    List<Card> cardsOnTable = game.getCardsOnTable();
+                    cardsOnTable.add(randomCard);
+                    game.setCardsOnTable(cardsOnTable);
                 }
             }
         }

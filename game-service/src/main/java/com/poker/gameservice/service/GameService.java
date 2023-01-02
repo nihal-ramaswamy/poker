@@ -55,7 +55,7 @@ public class GameService {
     }
 
     private void updateGameInDB(Game game, List<Card> availableCards, List<Long> chosenPlayers) {
-        game.setCardsOnTable(null);
+        game.setCardsOnTable(new ArrayList<>());
         game.setHasGameStarted(true);
         game.setAvailableCardsInDeck(availableCards);
 

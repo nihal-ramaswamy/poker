@@ -56,6 +56,12 @@ public class CardUtils {
         return chosenCards;
     }
 
+    public static Card getRandomCard(List<Card> availableCards) {
+        Random rand = new Random();
+        int randomIndex = rand.nextInt(availableCards.size());
+        return availableCards.get(randomIndex);
+    }
+
     // availableCards should be pre-shuffled
     public static List<Card> getHandCards(List<Card> availableCards) {
         return new ArrayList<Card>(List.of(availableCards.get(0), availableCards.get(1)));
