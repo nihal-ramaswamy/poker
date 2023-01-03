@@ -51,41 +51,6 @@ public class PlayMoveService {
         }
     }
 
-    private void updateNextPlayer(Long playerID, List<Player> players, Game game) {
-        Player nextPlayer = new Player();
-
-        for (int i = 0; i < players.size(); i++) {
-            if (players.get(i).getId() == playerID) {
-                if (i == players.size() - 1) {
-                    nextPlayer = players.get(0);
-                } else {
-                    nextPlayer = players.get(i + 1);
-                }
-                break;
-            }
-        }
-
-        boolean isNextPlayerAllIn = nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying();
-        if (isNextPlayerAllIn) {
-            Long splitPot = 0L;
-            nextPlayer.setIsCurrentlyPlaying(false);
-            for (Player p : players) {
-                splitPot += Math.min(p.getCurrentMoney(), nextPlayer.getMoneyInPot());
-            }
-
-            List<Pot> pots = game.getMiniPots();
-            if (pots.size() == 0) {
-                pots.add(new Pot(nextPlayer.getId(), splitPot));
-            } else {
-                Pot pot = pots.get(pots.size() - 1);
-                pots.add(new Pot(nextPlayer.getId(), splitPot - pot.getAmount()));
-            }
-
-            game.setMiniPots(pots);
-        }
-        nextPlayer.setIsPlayerTurn(true);
-    }
-
     private void updatePlayerBasedOnMove(Player player, Game game, MoveType move, Long betAmount) {
         Player updatedPlayer = getPlayerBasedOnMove(move, betAmount, player, game);
         playerRepository.save(updatedPlayer);
@@ -115,7 +80,17 @@ public class PlayMoveService {
     }
 
     private void updateGameBasedOnMove(Game game, Player player, MoveType move, Long betAmount) {
-        if (player.getIsLastRaisedPlayer()) {
+        if (move == MoveType.CALL) {
+            game.setMoneyOnTable(game.getMoneyOnTable() + betAmount);
+        } else if (move == MoveType.ALL_IN || move == MoveType.RAISE) {
+            game.setMoneyOnTable(game.getMoneyOnTable() + (betAmount - player.getMoneyInPot()));
+        }
+    }
+
+    private void updateNextPlayer(Long playerID, List<Player> players, Game game) {
+        Player nextPlayer = findNextPlayer(playerID, players);
+
+        if (nextPlayer.getIsLastRaisedPlayer()) {
             game.setRoundNumber(game.getRoundNumber() + 1);
 
             boolean isLastRound = game.getCardsOnTable().size() == 5;
@@ -144,12 +119,44 @@ public class PlayMoveService {
             }
         }
 
-        if (move == MoveType.CALL) {
-            game.setMoneyOnTable(game.getMoneyOnTable() + betAmount);
-        } else if (move == MoveType.ALL_IN || move == MoveType.RAISE) {
-            game.setMoneyOnTable(game.getMoneyOnTable() + (betAmount - player.getMoneyInPot()));
+        boolean isNextPlayerAllIn = nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying();
+        if (isNextPlayerAllIn) {
+            nextPlayer.setIsCurrentlyPlaying(false);
+
+            Long splitPot = 0L;
+            for (Player player : players) {
+                splitPot += Math.min(player.getCurrentMoney(), nextPlayer.getMoneyInPot());
+            }
+
+            List<Pot> pots = game.getMiniPots();
+            if (pots.size() == 0) {
+                pots.add(new Pot(nextPlayer.getId(), splitPot));
+            } else {
+                Pot pot = pots.get(pots.size() - 1);
+                pots.add(new Pot(nextPlayer.getId(), splitPot - pot.getAmount()));
+            }
+
+            game.setMiniPots(pots);
+            gameRepository.save(game);
+            nextPlayer = findNextPlayer(nextPlayer.getId(), players);
         }
 
-        gameRepository.save(game);
+        nextPlayer.setIsPlayerTurn(true);
+        playerRepository.save(nextPlayer);
+    }
+
+    private Player findNextPlayer(Long playerID, List<Player> players) {
+        Player nextPlayer = new Player();
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getId() == playerID) {
+                if (i == players.size() - 1) {
+                    nextPlayer = players.get(0);
+                } else {
+                    nextPlayer = players.get(i + 1);
+                }
+                break;
+            }
+        }
+        return nextPlayer;
     }
 }
