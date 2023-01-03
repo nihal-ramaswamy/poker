@@ -3,6 +3,7 @@ package com.poker.gameservice.model.entity;
 import java.util.List;
 
 import com.poker.gameservice.model.Card;
+import com.poker.gameservice.model.Hand;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
