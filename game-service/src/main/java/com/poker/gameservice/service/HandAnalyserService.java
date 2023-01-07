@@ -12,9 +12,9 @@ import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.util.CardUtils;
 
-public class HandAnalyser {
-    
-    public HashMap<Long,Hand> getHands(List<Player> players, Game game) {
+public class HandAnalyserService {
+    public HashMap<Long,Hand> getHands(Game game) {
+        List<Player> players = game.getPlayers();
         HashMap<Long, Hand> hands = new HashMap<>();
         for (Player player : players) {
             hands.put(player.getId(), analyseHand(player, game));
@@ -152,11 +152,11 @@ public class HandAnalyser {
     private boolean isFullHouse(HashMap<Integer, Integer> cardValueCount) {
         int count = 0;
         for (Integer value : cardValueCount.values()) {
-            if(value == 3)
+            if (value == 3)
                 count++;
         }
 
-        return count==2 || (count==1 && isPair(cardValueCount) || isTwoPair(cardValueCount));
+        return count == 2 || (count == 1 && (isPair(cardValueCount) || isTwoPair(cardValueCount)));
     }
 
     private boolean isFlush(List<Card> cards) {
@@ -187,18 +187,16 @@ public class HandAnalyser {
         Collections.sort(rankValues);
 
         int count = 1;
-        for (int i = 0; i < rankValues.size()-1; i++) {
-            if(rankValues.get(i) - rankValues.get(i+1) == 1){
+        for (int i = 0; i < rankValues.size() - 1; i++) {
+            if (rankValues.get(i + 1) - rankValues.get(i) == 1) {
                 count++;
-            }
-            else if(count < 5){
+            } else if (count < 5) {
                 count = 1;
-            }
-            else {
+            } else {
                 return true;
             }
         }
-        return count>=5;
+        return count >= 5;
     }
 
     private boolean isThreeOfAKind(HashMap<Integer, Integer> cardValueCount) {
