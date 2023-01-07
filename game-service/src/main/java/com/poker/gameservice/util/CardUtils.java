@@ -66,4 +66,32 @@ public class CardUtils {
     public static List<Card> getHandCards(List<Card> availableCards) {
         return new ArrayList<Card>(List.of(availableCards.get(0), availableCards.get(1)));
     }
+
+
+    public static int getSuiteValue (Card card){
+        if(card.getSuite().equals("Spade")){
+            return 400;
+        } else if(card.getSuite().equals("Heart")){
+            return 300;
+        } else if(card.getSuite().equals("Diamond")){
+            return 200;
+        } else if(card.getSuite().equals("Club")){
+            return 100;
+        }
+        return 0;
+    }
+
+    public static int getRankValue(Card card){
+        if(card.getRank().equals("Ace")){
+            return 14;
+        } else if(card.getRank().equals("King")){
+            return 13;
+        } else if(card.getRank().equals("Queen")){
+            return 12;
+        } else if(card.getRank().equals("Jack")){
+            return 11;
+        } 
+        return Integer.parseInt(card.getRank());
+        
+    }
 }
