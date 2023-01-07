@@ -21,11 +21,14 @@ import com.poker.gameservice.util.CardUtils;
 public class PlayMoveService {
     private GameRepository gameRepository;
     private PlayerRepository playerRepository;
+    private MessagingService messagingService;
 
     @Autowired
-    public PlayMoveService(GameRepository gameRepository, PlayerRepository playerRepository) {
+    public PlayMoveService(GameRepository gameRepository, PlayerRepository playerRepository,
+            MessagingService messagingService) {
         this.gameRepository = gameRepository;
         this.playerRepository = playerRepository;
+        this.messagingService = messagingService;
     }
 
     public void playMove(String gameID, Long playerID, MoveType move, Long betAmount)
@@ -48,6 +51,7 @@ public class PlayMoveService {
             updatePlayerBasedOnMove(player, game, move, betAmount);
             updateGameBasedOnMove(game, player, move, betAmount);
             updateNextPlayer(playerID, players, game);
+            messagingService.informAdminAndPlayersOnMovePlayed(gameID);
         }
     }
 

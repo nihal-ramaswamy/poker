@@ -82,6 +82,8 @@ public class GameController {
             return ResponseEntity.ok("Informed all players about start of game.");
         } catch (NotEnoughPlayersException e) {
             return new ResponseEntity<>("Not enough players in the game to begin", HttpStatus.BAD_REQUEST);
+        } catch (GameDoesNotExistException e) {
+            return new ResponseEntity<>("No gameID: " + gameID, HttpStatus.BAD_REQUEST);
         }
     }
 }

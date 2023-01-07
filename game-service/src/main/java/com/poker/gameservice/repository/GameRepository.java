@@ -7,5 +7,4 @@ import com.poker.gameservice.model.entity.Game;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, String> {
-    Game findGameById(String gameId);
 }

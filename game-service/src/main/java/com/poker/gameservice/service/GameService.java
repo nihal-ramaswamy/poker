@@ -108,8 +108,13 @@ public class GameService {
         return gameID;
     }
 
-    public List<StartPlayerGameState> startGame(String gameID) throws NotEnoughPlayersException {
-        Game game = this.gameRepository.findGameById(gameID);
+    public List<StartPlayerGameState> startGame(String gameID)
+            throws NotEnoughPlayersException, GameDoesNotExistException {
+        Optional<Game> optionalGame = gameRepository.findById(gameID);
+        if (optionalGame.isEmpty()) {
+            throw new GameDoesNotExistException();
+        }
+        Game game = optionalGame.get();
         log.info(String.valueOf(game));
         Integer numDecks = game.getGameSettings().getNumberOfDecks();
         Long startMoney = game.getGameSettings().getStartingMoney();
