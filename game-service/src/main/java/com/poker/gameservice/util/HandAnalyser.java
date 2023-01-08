@@ -1,19 +1,20 @@
-package com.poker.gameservice.service;
+package com.poker.gameservice.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.Hand;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
-import com.poker.gameservice.util.CardUtils;
 
-public class HandAnalyserService {
-    public HashMap<Long,Hand> getHands(Game game) {
+public class HandAnalyser {
+    public HashMap<Long, Hand> getHands(Game game) {
         List<Player> players = game.getPlayers();
         HashMap<Long, Hand> hands = new HashMap<>();
         for (Player player : players) {
@@ -28,7 +29,6 @@ public class HandAnalyserService {
 
         HashMap<Integer, Integer> cardValueCount = new HashMap<>();
 
-
         for (Card card : cards) {
             int rankValue = CardUtils.getRankValue(card);
             if (cardValueCount.containsKey(rankValue)) {
@@ -37,7 +37,6 @@ public class HandAnalyserService {
                 cardValueCount.put(rankValue, 1);
             }
         }
-        
 
         cards.sort(new Comparator<Card>() {
             @Override
@@ -45,17 +44,30 @@ public class HandAnalyserService {
                 int card1Value = CardUtils.getRankValue(card1);
                 int card2Value = CardUtils.getRankValue(card2);
 
-                return cardValueCount.get(card1Value) < cardValueCount.get(card2Value) ? 1 
-                    : cardValueCount.get(card1Value) > cardValueCount.get(card2Value) ? -1 
-                    : card2Value - card1Value;
+                return cardValueCount.get(card1Value) < cardValueCount.get(card2Value) ? 1
+                        : cardValueCount.get(card1Value) > cardValueCount.get(card2Value) ? -1
+                                : cardValueCount.get(card1Value) > cardValueCount.get(card2Value) ? -1
+                                        : cardValueCount.get(card1Value) > cardValueCount.get(card2Value) ? -1
+                                                : cardValueCount.get(card1Value) > cardValueCount.get(card2Value) ? -1
+                                                        : cardValueCount.get(card1Value) > cardValueCount
+                                                                .get(card2Value) ? -1
+                                                                        : cardValueCount
+                                                                                .get(card1Value) > cardValueCount
+                                                                                        .get(card2Value) ? -1
+                                                                                                : cardValueCount.get(
+                                                                                                        card1Value) > cardValueCount
+                                                                                                                .get(card2Value)
+                                                                                                                        ? -1
+                                                                                                                        : card2Value
+                                                                                                                                - card1Value;
             }
         });
 
-        Hand hand = rankHand(cards , cardValueCount);
+        Hand hand = rankHand(cards, cardValueCount);
         return hand;
     }
 
-    private Hand rankHand(List<Card> cards, HashMap<Integer, Integer> cardValueCount){
+    private Hand rankHand(List<Card> cards, HashMap<Integer, Integer> cardValueCount) {
         Hand result = new Hand();
         result.setRank(getRankValue(cards, cardValueCount));
         result.setScore(getScore(cards));
@@ -65,23 +77,23 @@ public class HandAnalyserService {
 
     private int getRankValue(List<Card> cards, HashMap<Integer, Integer> cardValueCount) {
         int rank = 0;
-        if(isRoyalFlush(cards))
+        if (isRoyalFlush(cards))
             rank = 9;
-        else if(isStraightFlush(cards))
+        else if (isStraightFlush(cards))
             rank = 8;
-        else if(isFourOfAKind(cardValueCount))
+        else if (isFourOfAKind(cardValueCount))
             rank = 7;
-        else if(isFullHouse(cardValueCount))
+        else if (isFullHouse(cardValueCount))
             rank = 6;
-        else if(isFlush(cards))
+        else if (isFlush(cards))
             rank = 5;
-        else if(isStraight(cards))
+        else if (isStraight(cards))
             rank = 4;
-        else if(isThreeOfAKind(cardValueCount))
+        else if (isThreeOfAKind(cardValueCount))
             rank = 3;
-        else if(isTwoPair(cardValueCount))
+        else if (isTwoPair(cardValueCount))
             rank = 2;
-        else if(isPair(cardValueCount))
+        else if (isPair(cardValueCount))
             rank = 1;
         return rank;
     }
@@ -120,20 +132,22 @@ public class HandAnalyserService {
             default:
                 return "High Card";
         }
-        
     }
 
     private boolean isRoyalFlush(List<Card> cards) {
-
         List<Integer> cardValues = new ArrayList<>();
         for (Card card : cards) {
             cardValues.add(CardUtils.getRankValue(card) + CardUtils.getSuiteValue(card));
         }
 
-        return (cardValues.contains(114) && cardValues.contains(113) && cardValues.contains(112) && cardValues.contains(111) && cardValues.contains(110))
-            || (cardValues.contains(214) && cardValues.contains(213) && cardValues.contains(212) && cardValues.contains(211) && cardValues.contains(210))
-            || (cardValues.contains(314) && cardValues.contains(313) && cardValues.contains(312) && cardValues.contains(311) && cardValues.contains(310))
-            || (cardValues.contains(414) && cardValues.contains(413) && cardValues.contains(412) && cardValues.contains(411) && cardValues.contains(410));
+        return (cardValues.contains(114) && cardValues.contains(113) && cardValues.contains(112)
+                && cardValues.contains(111) && cardValues.contains(110))
+                || (cardValues.contains(214) && cardValues.contains(213) && cardValues.contains(212)
+                        && cardValues.contains(211) && cardValues.contains(210))
+                || (cardValues.contains(314) && cardValues.contains(313) && cardValues.contains(312)
+                        && cardValues.contains(311) && cardValues.contains(310))
+                || (cardValues.contains(414) && cardValues.contains(413) && cardValues.contains(412)
+                        && cardValues.contains(411) && cardValues.contains(410));
     }
 
     private boolean isStraightFlush(List<Card> cards) {
@@ -143,7 +157,7 @@ public class HandAnalyserService {
     private boolean isFourOfAKind(HashMap<Integer, Integer> cardValueCount) {
         int count = 0;
         for (Integer value : cardValueCount.values()) {
-            if(value == 4)
+            if (value == 4)
                 count++;
         }
         return count == 1;
@@ -171,7 +185,7 @@ public class HandAnalyserService {
         }
 
         for (Integer value : suiteCount.values()) {
-            if(value >= 5)
+            if (value >= 5)
                 return true;
         }
 
@@ -179,10 +193,15 @@ public class HandAnalyserService {
     }
 
     private boolean isStraight(List<Card> cards) {
-        List<Integer> rankValues = new ArrayList<>();
+        Set<Integer> rankValuesSet = new TreeSet<>();
         for (Card card : cards) {
-            rankValues.add(CardUtils.getRankValue(card));
+            rankValuesSet.add(CardUtils.getRankValue(card));
         }
+        if (rankValuesSet.contains(14)) {
+            rankValuesSet.add(1);
+        }
+
+        List<Integer> rankValues = new ArrayList<>(rankValuesSet);
 
         Collections.sort(rankValues);
 
@@ -202,16 +221,16 @@ public class HandAnalyserService {
     private boolean isThreeOfAKind(HashMap<Integer, Integer> cardValueCount) {
         int count = 0;
         for (Integer value : cardValueCount.values()) {
-            if(value == 3)
+            if (value == 3)
                 count++;
         }
-        return count==1;
+        return count == 1;
     }
 
     private boolean isTwoPair(HashMap<Integer, Integer> cardValueCount) {
         int count = 0;
         for (Integer value : cardValueCount.values()) {
-            if(value == 2)
+            if (value == 2)
                 count++;
         }
         return count >= 2;
@@ -220,10 +239,9 @@ public class HandAnalyserService {
     private boolean isPair(HashMap<Integer, Integer> cardValueCount) {
         int count = 0;
         for (Integer value : cardValueCount.values()) {
-            if(value == 2)
+            if (value == 2)
                 count++;
         }
-        return count==1;
+        return count == 1;
     }
-
 }
