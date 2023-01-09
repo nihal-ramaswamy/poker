@@ -9,7 +9,7 @@ import java.util.Random;
 public class CardUtils {
     public static List<String> suite = new ArrayList<>(List.of("Diamond", "Spade", "Club", "Heart"));
     public static List<String> rank = new ArrayList<>(
-            List.of("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"));
+            List.of("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"));
 
     public static List<Card> generateDeck() {
         List<String> suite = CardUtils.suite;
