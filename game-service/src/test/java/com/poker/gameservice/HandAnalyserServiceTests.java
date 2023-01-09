@@ -396,7 +396,7 @@ public class HandAnalyserServiceTests {
 
         Player player1 = new Player().toBuilder().id(1L).deck(deck1).build();
         Player player2 = new Player().toBuilder().id(2L).deck(deck2).build();
-        List<Player> players = List.of(player1,player2);
+        List<Player> players = List.of(player1, player2);
 
         Game game = new Game();
         game.setPlayers(players);
@@ -411,6 +411,7 @@ public class HandAnalyserServiceTests {
         HashMap<Long, Hand> hands = handAnalyser.getHands(game);
         Hand hand1 = hands.get(1L);
         Hand hand2 = hands.get(2L);
+
         assertTrue(hand1.getScore() > hand2.getScore());
     }
 }

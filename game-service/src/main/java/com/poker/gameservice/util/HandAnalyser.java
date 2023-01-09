@@ -24,7 +24,8 @@ public class HandAnalyser {
     }
 
     private Hand analyseHand(Player player, Game game) {
-        List<Card> cards = game.getCardsOnTable();
+        List<Card> cards = new ArrayList<>();
+        cards.addAll(game.getCardsOnTable());
         cards.addAll(player.getDeck());
 
         HashMap<Integer, Integer> cardValueCount = new HashMap<>();
