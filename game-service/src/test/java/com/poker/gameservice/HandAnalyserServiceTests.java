@@ -363,7 +363,7 @@ public class HandAnalyserServiceTests {
     @Test
     public void analyseHandTestRoyalFlush(){
         List<Card> deck = new ArrayList<Card>(List.of(
-                new Card("Diamond", "A"),
+                new Card("Diamond", "Ace"),
                 new Card("Diamond", "Queen")));
 
         Player player1 = new Player().toBuilder().id(1L).deck(deck).build();
