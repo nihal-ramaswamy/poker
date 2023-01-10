@@ -414,6 +414,30 @@ public class HandAnalyserServiceTests {
 
         assertTrue(hand1.getScore() > hand2.getScore());
     }
+
+    @Test
+    public void analyseHandTestStraightNotFlush(){
+        List<Card> deck = new ArrayList<Card>(List.of(
+                new Card("Diamond", "3"),
+                new Card("Diamond", "4")));
+
+        Player player1 = new Player().toBuilder().id(1L).deck(deck).build();
+        List<Player> players = List.of(player1);
+
+        Game game = new Game();
+        game.setPlayers(players);
+        List<Card> cardsOnTable = new ArrayList<>(List.of(
+                new Card("Diamond", "5"),
+                new Card("Diamond", "Jack"),
+                new Card("Spade", "6"),
+                new Card("Club", "7"),
+                new Card("Diamond", "King")));
+        game.setCardsOnTable(cardsOnTable);
+
+        HashMap<Long, Hand> hands = handAnalyser.getHands(game);
+        Hand hand1 = hands.get(1L);
+        assertEquals("Flush", hand1.getName());
+    }
 }
 
 
