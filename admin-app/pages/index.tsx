@@ -62,7 +62,7 @@ const Home: NextPage = () => {
         const { playerUsername, playerID } = JSON.parse(message.body);
         setPlayers((players) => [
           ...players,
-          { ID: playerID, username: playerUsername },
+          { id: playerID, username: playerUsername },
         ]);
       });
     });
@@ -109,8 +109,8 @@ const Home: NextPage = () => {
               Players: {players.length}
             </label>
             <ul>
-              {players.map(({ username, ID }) => (
-                <li key={`player-${ID}`}>{username}</li>
+              {players.map(({ username, id }) => (
+                <li key={`player-${id}`}>{username}</li>
               ))}
             </ul>
           </div>

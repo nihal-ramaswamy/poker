@@ -23,7 +23,7 @@ export default function App() {
       const {
         data: { playerID },
       } = await axios.post("/game/join", {
-        gameID: gameID,
+        gameID,
         playerUsername: username,
       });
       console.log("Player ID is:", playerID);
