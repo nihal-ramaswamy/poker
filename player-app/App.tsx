@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import SockJS from "sockjs-client";
 import { TextDecoder, TextEncoder } from "text-encoding";
+import GameScreen from "./components/GameScreen";
 import axios, { GAME_SERVICE_WS_URL } from "./config/axios";
 
 polyFillTextEncoder();
@@ -54,33 +55,34 @@ export default function App() {
   }, [playerID]);
 
   return (
-    <View style={styles.container}>
-      {isLoggedIn ? (
-        <View>
-          <Text>Player ID: {playerID}</Text>
-        </View>
-      ) : (
-        <>
-          <View style={styles.labelContainer}>
-            <Text style={styles.label}>Username</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={setUsername}
-            value={username}
-          />
-          <View style={styles.labelContainer}>
-            <Text style={styles.label}>Game ID</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={setGameID}
-            value={gameID}
-          />
-          <Button onPress={joinGame} title="Join Game" />
-        </>
-      )}
-    </View>
+    <GameScreen />
+    // <View style={styles.container}>
+    //   {isLoggedIn ? (
+    //     <View>
+    //       <Text>Player ID: {playerID}</Text>
+    //     </View>
+    //   ) : (
+    //     <>
+    //       <View style={styles.labelContainer}>
+    //         <Text style={styles.label}>Username</Text>
+    //       </View>
+    //       <TextInput
+    //         style={styles.input}
+    //         onChangeText={setUsername}
+    //         value={username}
+    //       />
+    //       <View style={styles.labelContainer}>
+    //         <Text style={styles.label}>Game ID</Text>
+    //       </View>
+    //       <TextInput
+    //         style={styles.input}
+    //         onChangeText={setGameID}
+    //         value={gameID}
+    //       />
+    //       <Button onPress={joinGame} title="Join Game" />
+    //     </>
+    //   )}
+    // </View>
   );
 }
 
