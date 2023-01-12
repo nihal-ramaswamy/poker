@@ -13,6 +13,7 @@
     "@stomp/stompjs": "^6.1.2",
     "axios": "^1.2.1",
     "expo": "~47.0.8",
+    "expo-asset": "~8.7.0",
     "expo-status-bar": "~1.4.2",
     "localtunnel": "^2.0.2",
     "nativewind": "^2.0.11",

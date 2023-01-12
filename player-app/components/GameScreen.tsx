@@ -1,29 +1,47 @@
+import { Slider } from "@miblanchard/react-native-slider";
+import { useAssets } from "expo-asset";
+import { useState } from "react";
 import {
-  View,
-  Text,
   Dimensions,
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import { Slider } from "@miblanchard/react-native-slider";
-import { useState } from "react";
-const { height } = Dimensions.get("screen");
+import MoneyPotSVG from "./svgs/MoneyPotSVG";
+import PokerChipSVG from "./svgs/PokerChipSVG";
 
+const { height } = Dimensions.get("screen");
 const moneyViewHeight = height * 0.082;
 const buttonViewHeight = height * 0.272;
 const gameButtonViewHeight = buttonViewHeight / 2;
 const sliderViewHeight = buttonViewHeight / 2;
 const cardViewHeight = height - moneyViewHeight - buttonViewHeight;
 
-const MoneyView = () => {
-  return (
-    <View className="mt-7 bg-gray-800 w-full" style={styles.moneyView}></View>
-  );
-};
+const MoneyView = () => (
+  <View
+    className="mt-7 bg-gray-800 w-full px-6 flex flex-row justify-between items-center"
+    style={styles.moneyView}
+  >
+    <View className="flex flex-row items-center">
+      <PokerChipSVG />
+      <Text className="ml-2 text-white text-xl font-bold">20000</Text>
+    </View>
+    <View className="flex flex-row items-center">
+      <MoneyPotSVG />
+      <Text className="ml-2 text-white text-xl font-bold">200</Text>
+    </View>
+  </View>
+);
 
 const CardView = () => {
-  return <View className="bg-blue-800" style={styles.cardView}></View>;
+  const [assets, error] = useAssets([require("../assets/poker-board-bg.jpeg")]);
+  if (error || assets === undefined) return null;
+
+  const image = assets[0];
+  return <ImageBackground source={image} style={styles.cardView} />;
 };
 
 const ButtonView = () => {
@@ -53,6 +71,8 @@ const ButtonView = () => {
               <Text className="text-white">{value}</Text>
             </View>
           )}
+          thumbStyle={styles.sliderThumb}
+          minimumTrackTintColor="#003399"
           value={value}
           onValueChange={(value) => setValue(value)}
         />
@@ -86,6 +106,19 @@ const styles = StyleSheet.create({
   },
   sliderView: {
     height: sliderViewHeight,
+  },
+  sliderThumb: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#003399",
+    borderRadius: 30 / 2,
+    borderWidth: 2,
+    height: 30,
+    width: 30,
+  },
+  sliderTrack: {
+    backgroundColor: "#003399",
+    borderRadius: 2,
+    height: 4,
   },
 });
 
