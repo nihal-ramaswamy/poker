@@ -8,9 +8,12 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import MoneyPotSVG from "./svgs/MoneyPotSVG";
+import TwoOfClubs from "./svgs/playing-cards/TwoOfClubs";
+import TwoOfDiamonds from "./svgs/playing-cards/TwoOfDiamonds";
 import PokerChipSVG from "./svgs/PokerChipSVG";
 
 const { height } = Dimensions.get("screen");
@@ -38,10 +41,43 @@ const MoneyView = () => (
 
 const CardView = () => {
   const [assets, error] = useAssets([require("../assets/poker-board-bg.jpeg")]);
+  const [isFirstCardOnTop, setIsFirstCardOnTop] = useState<boolean>(false);
+
   if (error || assets === undefined) return null;
 
+  const toggleTopCard = () => setIsFirstCardOnTop(!isFirstCardOnTop);
+
   const image = assets[0];
-  return <ImageBackground source={image} style={styles.cardView} />;
+
+  const topStyle = {
+    position: "absolute",
+    top: -50,
+    left: 50,
+  };
+
+  return (
+    <ImageBackground
+      source={image}
+      className="flex justify-center items-center"
+      style={styles.cardView}
+    >
+      <TouchableWithoutFeedback onPress={toggleTopCard}>
+        <View className="mr-11 mt-11">
+          {isFirstCardOnTop ? (
+            <>
+              <TwoOfClubs style={topStyle} />
+              <TwoOfDiamonds />
+            </>
+          ) : (
+            <>
+              <TwoOfDiamonds style={topStyle} />
+              <TwoOfClubs />
+            </>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </ImageBackground>
+  );
 };
 
 const ButtonView = () => {
