@@ -82,6 +82,24 @@ const CardView = () => {
 
 const ButtonView = () => {
   const [value, setValue] = useState<number>(0);
+  const [isUserTurn, setIsUserTurn] = useState<boolean>(false);
+
+  if (!isUserTurn) {
+    return (
+      // TODO: Render this based on game state.
+      <TouchableWithoutFeedback onPress={() => setIsUserTurn(true)}>
+        <View
+          className="bg-gray-800 w-full flex justify-center items-center"
+          style={styles.buttonView}
+        >
+          <Text className="font-bold mb-12 text-white text-2xl">
+            Wait for your turn to play
+          </Text>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
   return (
     <View className="bg-gray-800 w-full" style={styles.buttonView}>
       <View
