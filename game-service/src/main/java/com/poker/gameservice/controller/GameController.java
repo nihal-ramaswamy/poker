@@ -64,8 +64,7 @@ public class GameController {
         String gameID = request.getGameID();
         String playerUsername = request.getPlayerUsername();
 
-        log.info("Game ID: " + request.getGameID());
-        log.info("Player Username: " + request.getPlayerUsername());
+        log.info("Joining user to game", gameID, playerUsername);
 
         Player player = gameService.getPlayerIfExistsElseCreate(playerUsername, gameID);
         Long playerID = player.getId();

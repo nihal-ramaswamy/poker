@@ -65,6 +65,18 @@ const Home: NextPage = () => {
           { ID: playerID, username: playerUsername },
         ]);
       });
+
+      const onMoveURL = `/admin/${gameID}/on-move`;
+      stompClient?.subscribe(onMoveURL, (message) => {
+        const body = JSON.parse(message.body);
+        console.log(body);
+      });
+
+      const onRoundCompletion = `/admin/${gameID}/on-round-completion`;
+      stompClient?.subscribe(onRoundCompletion, (message) => {
+        const body = JSON.parse(message.body);
+        console.log(body);
+      });
     });
   };
 
