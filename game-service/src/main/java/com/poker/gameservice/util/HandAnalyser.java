@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.hibernate.Length;
+
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.Hand;
 import com.poker.gameservice.model.entity.Game;
@@ -24,7 +26,8 @@ public class HandAnalyser {
     }
 
     private Hand analyseHand(Player player, Game game) {
-        List<Card> cards = game.getCardsOnTable();
+        List<Card> cards = new ArrayList<>();
+        cards.addAll(game.getCardsOnTable());
         cards.addAll(player.getDeck());
 
         HashMap<Integer, Integer> cardValueCount = new HashMap<>();
@@ -151,7 +154,27 @@ public class HandAnalyser {
     }
 
     private boolean isStraightFlush(List<Card> cards) {
-        return isStraight(cards) && isFlush(cards);
+        HashMap<Integer, List<Card>> suiteCount = new HashMap<>();
+        for (Card card : cards) {
+            int suitValue = CardUtils.getSuiteValue(card);
+            if (suiteCount.containsKey(suitValue)) {
+                List<Card> temp = suiteCount.get(suitValue);
+                temp.add(card);
+                suiteCount.put(suitValue, temp);
+            } else {
+                List<Card> temp = new ArrayList<>();
+                temp.add(card);
+                suiteCount.put(suitValue, temp);
+            }
+        }
+
+        for (List<Card> value : suiteCount.values()) {
+            if (value.size()==5)
+                if(isStraight(value))
+                    return true;
+        }
+
+        return false;
     }
 
     private boolean isFourOfAKind(HashMap<Integer, Integer> cardValueCount) {
