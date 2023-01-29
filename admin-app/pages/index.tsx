@@ -2,6 +2,7 @@ import { CompatClient, Stomp } from "@stomp/stompjs";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import SockJS from "sockjs-client";
+import GameView from "../components/GameView";
 import axios from "../config/axios";
 import {
   GAME_SERVICE_BASE_URL,
@@ -46,7 +47,6 @@ const Home: NextPage = () => {
     const { data } = await axios.get(`/game/${gameID}`);
     const { players, hasStarted } = data;
     setPlayers(players);
-    setHasStarted(hasStarted);
   };
 
   const connect = () => {
@@ -92,6 +92,7 @@ const Home: NextPage = () => {
         `${GAME_SERVICE_BASE_URL}/game/${gameID}/start`
       );
       console.log(res.data);
+      setHasStarted(true);
     } catch (err: any) {
       console.log(err.response);
     }
@@ -100,28 +101,32 @@ const Home: NextPage = () => {
   return (
     <div>
       {isLoggedIn ? (
-        <div>
-          <p className="mb-3">
-            Logged In: {username}, gameID: {gameID}
-          </p>
+        hasStarted ? (
+          <GameView />
+        ) : (
           <div>
-            <label className="text-md font-medium text-gray-900">
-              Players: {players.length}
-            </label>
-            <ul>
-              {players.map(({ username, id }) => (
-                <li key={`player-${id}`}>{username}</li>
-              ))}
-            </ul>
+            <p className="mb-3">
+              Logged In: {username}, gameID: {gameID}
+            </p>
+            <div>
+              <label className="text-md font-medium text-gray-900">
+                Players: {players.length}
+              </label>
+              <ul>
+                {players.map(({ username, id }) => (
+                  <li key={`player-${id}`}>{username}</li>
+                ))}
+              </ul>
+            </div>
+            <button
+              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+              onClick={startGame}
+              type="button"
+            >
+              Start game
+            </button>
           </div>
-          <button
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={startGame}
-            type="button"
-          >
-            Start game
-          </button>
-        </div>
+        )
       ) : (
         <div className="p-5">
           <div className="flex items-center mb-4">
