@@ -1,7 +1,9 @@
 package com.poker.gameservice.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,11 +13,13 @@ import com.poker.gameservice.exception.PlayerDoesNotExistException;
 import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.MoveType;
 import com.poker.gameservice.model.Pot;
+import com.poker.gameservice.model.Hand;
 import com.poker.gameservice.model.entity.Game;
 import com.poker.gameservice.model.entity.Player;
 import com.poker.gameservice.repository.GameRepository;
 import com.poker.gameservice.repository.PlayerRepository;
 import com.poker.gameservice.util.CardUtils;
+import com.poker.gameservice.util.HandAnalyser;
 
 @Service
 public class PlayMoveService {
@@ -98,8 +102,45 @@ public class PlayMoveService {
             game.setRoundNumber(game.getRoundNumber() + 1);
 
             boolean isLastRound = game.getCardsOnTable().size() == 5;
+
             if (isLastRound) {
-                // TODO: Handle scoring and calculation.
+                HandAnalyser handAnalyser = new HandAnalyser();
+                List<Entry<Long, Hand>> hands = new ArrayList<>(handAnalyser.getHands(game).entrySet());
+                hands.sort((firstHand, secondHand) -> {
+
+                    int firstRank = firstHand.getValue().getRank();
+                    int secondRank = secondHand.getValue().getRank();
+                    int firstScore = firstHand.getValue().getScore();
+                    int secondScore = secondHand.getValue().getScore();
+                
+                    return firstRank == secondRank ? firstScore - secondScore : firstRank - secondRank;
+                });
+
+                List<Pot> pots = game.getMiniPots();
+                int potsCount = pots.size();
+                int currPotIndex = 0;
+                int winnerIndex = 0;
+                Long winnerId = hands.get(winnerIndex).getKey();
+
+                for (int right = 0; right < potsCount; ++right) {
+                    if (pots.get(right).getPlayerID() == winnerId) {
+                        if(currPotIndex!=0){
+                            pots.get(right).setAmount(pots.get(right).getAmount() - pots.get(currPotIndex).getAmount());
+                            }
+                        }
+                        currPotIndex = right;   
+                        final Long finalWinnerId = winnerId;
+                        Player winner = players.stream().filter(player -> player.getId().equals(finalWinnerId)).findFirst().get();
+                        winner.setCurrentMoney(winner.getCurrentMoney() + pots.get(currPotIndex).getAmount());
+                        game.setMoneyOnTable(game.getMoneyOnTable() - pots.get(currPotIndex).getAmount());
+                        winnerId = hands.get(++winnerIndex).getKey(); 
+                    }
+                    
+                    final Long finalWinnerId = winnerId;
+                    Player winner = players.stream().filter(player -> player.getId().equals(finalWinnerId)).findFirst().get();
+                    winner.setCurrentMoney(winner.getCurrentMoney() + game.getMoneyOnTable());
+                } 
+
             } else {
                 List<Card> availableCards = game.getAvailableCardsInDeck();
                 boolean isFirstRound = availableCards.isEmpty();
@@ -121,7 +162,6 @@ public class PlayMoveService {
                     game.setCardsOnTable(cardsOnTable);
                 }
             }
-        }
 
         boolean isNextPlayerAllIn = nextPlayer.getCurrentMoney() == 0 && nextPlayer.getIsCurrentlyPlaying();
         if (isNextPlayerAllIn) {
@@ -133,13 +173,8 @@ public class PlayMoveService {
             }
 
             List<Pot> pots = game.getMiniPots();
-            if (pots.size() == 0) {
-                pots.add(new Pot(nextPlayer.getId(), splitPot));
-            } else {
-                Pot pot = pots.get(pots.size() - 1);
-                pots.add(new Pot(nextPlayer.getId(), splitPot - pot.getAmount()));
-            }
-
+            pots.add(new Pot(nextPlayer.getId(), splitPot));
+         
             game.setMiniPots(pots);
             gameRepository.save(game);
             nextPlayer = findNextPlayer(nextPlayer.getId(), players);
