@@ -44,6 +44,18 @@ export default function App() {
         setBody(JSON.parse(message.body));
         console.log(JSON.parse(message.body));
       });
+
+      const onMoveURL = `/player/${gameID}/on-move`;
+      stompClient?.subscribe(onMoveURL, (message) => {
+        const body = JSON.parse(message.body);
+        console.log(body);
+      });
+
+      const onRoundCompletion = `/player/${gameID}/on-round-completion`;
+      stompClient?.subscribe(onRoundCompletion, (message) => {
+        const body = JSON.parse(message.body);
+        console.log(body);
+      });
     });
   };
 

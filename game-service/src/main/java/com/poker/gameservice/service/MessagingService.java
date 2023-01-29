@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.poker.gameservice.model.Card;
 import com.poker.gameservice.model.dto.OnMoveAdminMessage;
 import com.poker.gameservice.model.dto.OnMovePlayerMessage;
+import com.poker.gameservice.model.dto.OnRoundCompletionAdminMessage;
 import com.poker.gameservice.model.dto.PlayerJoinAdminMessage;
 import com.poker.gameservice.model.dto.StartPlayerGameState;
 import com.poker.gameservice.model.entity.Player;
@@ -40,7 +42,7 @@ public class MessagingService {
     }
 
     public void informAllPlayersStartGameState(List<StartPlayerGameState> startPlayerGameStateList) {
-        log.info("Informing " + startPlayerGameStateList.size() + "players about commence of game");
+        log.info("Informing players about commence of game " + startPlayerGameStateList);
         for (StartPlayerGameState startPlayerGameState : startPlayerGameStateList) {
             informPlayerStartGameState(startPlayerGameState);
         }
@@ -53,8 +55,31 @@ public class MessagingService {
         informPlayersOnMovePlayed(gameID, players);
     }
 
+    public void informAdminAndPlayersOnRoundCompletion(String gameID, List<Player> players, List<Card> cardsOnTable) {
+        log.info("Informing admin and players on round completion for game: " + gameID);
+        Long currentMovePlayerID = findCurrentMovePlayerID(players);
+        Long currentSmallBetPlayerID = findCurrentSmallBetPlayer(players);
+        informAdminOnRoundCompletion(gameID, currentMovePlayerID, currentSmallBetPlayerID, cardsOnTable);
+        informPlayersOnRoundCompletion(gameID, currentMovePlayerID);
+    }
+
+    private void informAdminOnRoundCompletion(String gameID, Long currentMovePlayerID,
+            Long currentSmallBetPlayerID, List<Card> cardsOnTable) {
+        log.info("Informing admin on round completion for game: " + gameID);
+        String onRoundCompletionURL = "/admin/" + gameID + "/on-round-completion";
+        OnRoundCompletionAdminMessage message = new OnRoundCompletionAdminMessage(currentSmallBetPlayerID,
+                currentMovePlayerID, cardsOnTable);
+        messagingTemplate.convertAndSend(onRoundCompletionURL, message);
+    }
+
+    private void informPlayersOnRoundCompletion(String gameID, Long currentMovePlayerID) {
+        log.info("Informing players on round completion for game: " + gameID);
+        String onRoundCompletionURL = "/player/" + gameID + "/on-round-completion";
+        messagingTemplate.convertAndSend(onRoundCompletionURL, new OnMovePlayerMessage(currentMovePlayerID));
+    }
+
     private void informAdminOnMovePlayed(String gameID, List<Player> players) {
-        log.info("Informing admin on move played");
+        log.info("Informing admin on move played, gameID: " + gameID + ", players: " + players);
         Long currentMovePlayerID = findCurrentMovePlayerID(players);
         Long lastRaisedPlayerID = findLastRaisedPlayerID(players);
         String onMoveURL = "/admin/" + gameID + "/on-move";
@@ -62,10 +87,19 @@ public class MessagingService {
     }
 
     private void informPlayersOnMovePlayed(String gameID, List<Player> players) {
-        log.info("Informing players on move played");
+        log.info("Informing players on move played, gameID: " + gameID + ", players: " + players);
         Long currentMovePlayerID = findCurrentMovePlayerID(players);
         String onMoveURL = "/player/" + gameID + "/on-move";
         messagingTemplate.convertAndSend(onMoveURL, new OnMovePlayerMessage(currentMovePlayerID));
+    }
+
+    private Long findCurrentSmallBetPlayer(List<Player> players) {
+        for (Player player : players) {
+            if (player.getIsCurrentSmallBetPlayer()) {
+                return player.getId();
+            }
+        }
+        return null;
     }
 
     private Long findCurrentMovePlayerID(List<Player> players) {

@@ -13,5 +13,4 @@ public class OnMoveResponse {
     private String playerName;
     private Long potAmount;
     private Long lastRaisedAmount;
-   
 }
